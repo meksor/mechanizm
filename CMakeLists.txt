@@ -30,3 +30,7 @@ ExternalProject_Add(libopenshot
 )
 
 add_subdirectory(src)
+
+target_include_directories(mechanizm PUBLIC ${CMAKE_BINARY_DIR}/libopenshot/src/libopenshot/include)
+target_include_directories(mechanizm PUBLIC ${CMAKE_BINARY_DIR}/libopenshot/src/libopenshot-build/include)
+target_include_directories(mechanizm PUBLIC ${CMAKE_BINARY_DIR}/libopenshot-audio/src/libopenshot-audio-build/include)
