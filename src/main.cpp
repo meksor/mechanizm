@@ -1,22 +1,41 @@
-#include "OpenShot.h"
 #include <iostream>
 #include <memory>
 
-int main(int argc, char* argv[])
+#include <OpenShot.h>
+#include <QtPlayer.h>
+#include <Qt/VideoRenderWidget.h>
+#include <qapplication.h>
+#include <qpushbutton.h>
+#include <QSizePolicy>
+#include <QVBoxLayout>
+
+#include "window.h"
+
+int main(int argc, char *argv[])
 {
-  int frame = 0;
-  openshot::FFmpegReader r(argv[1]);
-  r.Open(); // Open the reader
-  // Get frame number 1 from the video
-  std::shared_ptr<openshot::Frame> f;
-  while (f = r.GetFrame(frame)) { 
-    // Now that we have an openshot::Frame object, lets have some fun!
-    f->Display(); // Display the frame on the screen
-    // f->DisplayWaveform(); // Display the audio waveform as an image
-    // f->Play(); // Play the audio through your speaker
-    // Close the reader
-    frame += 1;
-  }
-  r.Close();
-  return 0;
+  QApplication app(argc, argv);
+
+  openshot::FFmpegReader reader(argv[1]);
+
+  reader.Open();
+
+  MainWindow window;
+  window.Player()->Reader(&reader);
+  window.show();
+
+  return app.exec();
+  /*openshot::Timeline t(1280, // width
+           720, // height
+           openshot::Fraction(25,1), // framerate
+           44100, // sample rate
+           2, // channels
+           openshot::ChannelLayout::LAYOUT_STEREO
+           );
+
+  c.Start(0.0);
+  c.End(16.0);
+  t.AddClip(&c);
+
+  player.Play();
+  return 0;*/
 }

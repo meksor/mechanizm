@@ -1,2 +1,2 @@
 
-add_executable(mechanizm main.cpp)
+add_executable(mechanizm main.cpp window.cpp)
