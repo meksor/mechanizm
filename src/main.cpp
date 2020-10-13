@@ -1,28 +1,28 @@
 #include <iostream>
 #include <memory>
 
-#include <OpenShot.h>
+#include <Clip.h>
 #include <QtPlayer.h>
 #include <Qt/VideoRenderWidget.h>
 #include <qapplication.h>
-#include <qpushbutton.h>
 #include <QSizePolicy>
 #include <QVBoxLayout>
 
-#include "window.h"
+#include "browser.h"
+#include "editor.h"
+#include "project.h"
+#include "ui.h"
 
 int main(int argc, char *argv[])
 {
   QApplication app(argc, argv);
 
-  openshot::FFmpegReader reader(argv[1]);
-
-  reader.Open();
-
-  MainWindow window;
-  window.Player()->Reader(&reader);
-  window.show();
-
+  auto project = std::make_shared<mechanizm::Project>();
+  project->addFile(argv[1]);
+  mechanizm::ProjectUiController uiController;
+  uiController.setProject(project);
+  uiController.openBrowserWindow();
+  
   return app.exec();
   /*openshot::Timeline t(1280, // width
            720, // height

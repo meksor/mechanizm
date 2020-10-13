@@ -1,2 +1,2 @@
 
-add_executable(mechanizm main.cpp window.cpp)
+add_executable(mechanizm player.cpp ui.cpp project.cpp editor.cpp browser.cpp main.cpp)
