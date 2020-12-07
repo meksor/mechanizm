@@ -1,8 +1,7 @@
-cmake_minimum_required(VERSION 3.18)
+cmake_minimum_required(VERSION 3.18.0)
+project(mechanizm VERSION 0.1.0)
 
-project(Mechanizm)
-
-set(CMAKE_CXX_STANDARD 11)
+set(CMAKE_CXX_STANDARD 14)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
 # set(CMAKE_BINARY_DIR ./build)
 
@@ -15,8 +14,8 @@ include(CheckIncludeFileCXX)
 include(CheckIncludeFiles)
 include(ExternalProject)
 
-
 find_package(Qt5Widgets REQUIRED)
+include_directories(/usr/include/qt/QtCore)
 
 ExternalProject_Add(libopenshot-audio-dl
   GIT_REPOSITORY "https://github.com/OpenShot/libopenshot-audio"
@@ -32,7 +31,7 @@ SET(OSA_LIB_DIR ${CMAKE_CURRENT_BINARY_DIR}/third/lib)
 
 ExternalProject_Add(libopenshot-dl
   GIT_REPOSITORY "https://github.com/OpenShot/libopenshot"
-  GIT_TAG "origin/develop"
+  GIT_TAG "414a2cd"
   PREFIX ${CMAKE_CURRENT_BINARY_DIR}/third
   CMAKE_CACHE_ARGS
     -DENABLE_MAGICK:BOOL=0
@@ -64,4 +63,5 @@ add_dependencies(mechanizm libopenshot-dl)
 target_link_libraries(mechanizm libopenshot-audio)
 add_dependencies(mechanizm libopenshot-audio-dl)
 
+target_link_libraries(mechanizm jsoncpp)
 target_link_libraries(mechanizm Qt5::Widgets)

@@ -1,55 +1,55 @@
 #pragma once
 
-#include <list>
+#include <memory>
 #include <string>
 
+#include <QString>
+#include <QDir>
+
 #include <Clip.h>
-#include <Fraction.h>
 #include <KeyFrame.h>
+#include <FFmpegReader.h>
+
+#include "json.h"
+#include "source.h"
 
 namespace mechanizm {
-    class Clip : public openshot::Clip {
+
+    class Clip : public openshot::Clip, public mechanizm::JsonSerializable {
+
+    using mechanizm::JsonSerializable::SetJson;
+    using mechanizm::JsonSerializable::Json;
+
     public:
         typedef std::shared_ptr<Clip> shared_ptr;
 
-        Clip() : openshot::Clip() {
-        };
-        
-        Clip(std::string p) 
-                : openshot::Clip(p) {
-        };
-
-        Clip (openshot::ReaderBase *r)
-                : openshot::Clip(r) {
-        };
+        Clip(QString name, mechanizm::Source::shared_ptr source, QDir &projectDir);
+        Clip(QString dirPath);
 
         virtual ~Clip() {};
 
-        void mapTimeToBpm(int bpm) {
-            openshot::Fraction fps = this->Reader()->info.fps;
-            int quarterNoteLength = (60 * fps.ToFloat()) / bpm;
-            int pos = 0;
-            for(auto p = points.begin(); p != points.end(); p++ ) {
-                openshot::Point newPoint(pos, p->co.X); //, openshot::InterpolationType::LINEAR);
-                this->time.AddPoint(newPoint);
-                pos += quarterNoteLength;
-            }
-            this->time.UpdatePoint(0, this->time.GetPoint(1));
+        void setName(QString n) { name = n; };
+        QString getName() { return name; };
+        QString getRelativePath(QDir dir);
+        std::shared_ptr<openshot::FFmpegReader> getProxyReader() { return proxyReader; };
 
-            this->time.PrintValues();
-            this->time.PrintPoints();
-            this->Start(0);
-            this->End(pos / fps.ToFloat());
-        }
+        Json::Value JsonValue() const override;
+        void SetJsonValue(const Json::Value root) override;
 
-
-        void addPoint(openshot::Point p) {    
-            points.push_back(p);
-        }
+        void addRythmicPoint(long x, float y);
+        openshot::Keyframe getRythmicPoints() { return rythmicPoints; };
         
+    protected:
+        void saveToDisk();
+        openshot::Keyframe rythmicPoints;
 
-        private: 
-            std::list<openshot::Point> points;
+    private:
+        void initReader();
 
-    };  
+        QDir rootDir;
+        QString name;
+        mechanizm::Source::shared_ptr source;
+        std::shared_ptr<openshot::FFmpegReader> proxyReader;
+    };
+
 }
