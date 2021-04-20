@@ -13,8 +13,4 @@ namespace mechanizm {
             throw openshot::InvalidJSON("JSON is invalid (missing keys or invalid data types)");
         }
     };
-<<<<<<< HEAD
 }
-=======
-}
->>>>>>> a10c65eb9222076bad501b06444e96ec633cb559

@@ -19,7 +19,7 @@ namespace mechanizm {
 
         void setSequences(std::vector<mechanizm::Sequence::shared_ptr> s);
         
-        mechanizm::Sequence::shared_ptr currentSource();
+        mechanizm::Sequence::shared_ptr currentSequence();
 
     signals:
         void importFileSelected(QString filePath);

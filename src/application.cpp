@@ -50,6 +50,10 @@ namespace mechanizm {
         QObject::connect(project.get(), &mechanizm::Project::sourcesChanged,
             sourcesWindow.get(), &mechanizm::SourcesWidget::setSources);
 
+        QObject::connect(project.get(), &mechanizm::Project::sequencesChanged,
+            sourcesWindow.get(), &mechanizm::SourcesWidget::setSequences);
+
+
         QObject::connect(sourcesWindow.get(), &mechanizm::SourcesWidget::importFileSelected,
             project.get(), &mechanizm::Project::importFile);
 

@@ -5,6 +5,7 @@
 #include "launcher_widget.h"
 #include "project.h"
 #include "sources_widget.h"
+#include "sequences_widget.h"
 #include "clips_widget.h"
 #include "editor_widget.h"
 #include "clip.h"
@@ -30,6 +31,7 @@ namespace mechanizm {
 
         mechanizm::LauncherWidget::unique_ptr launcherWindow;
         mechanizm::SourcesWidget::unique_ptr sourcesWindow;
+        mechanizm::SequencesWidget::unique_ptr sequencesWindow;
         mechanizm::ClipsWidget::unique_ptr clipsWindow;
         mechanizm::EditorWidget::unique_ptr editorWindow;
 

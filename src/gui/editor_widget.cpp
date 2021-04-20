@@ -13,10 +13,11 @@ namespace mechanizm {
         table->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
         
         player = std::make_unique<mechanizm::PlayerWidget>();
-        this->setFixedSize(900, 500);
         hbox->addWidget(player.get());
         hbox->addWidget(table.get());
-        setLayout(hbox.get());
+
+        this->setFixedSize(900, 500);
+        this->setLayout(hbox.get());
     }
 
     void EditorWidget::setClip(mechanizm::Clip::shared_ptr c) {

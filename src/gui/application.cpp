@@ -15,6 +15,7 @@ namespace mechanizm {
         launcherWindow = std::make_unique<mechanizm::LauncherWidget>();
         clipsWindow = std::make_unique<mechanizm::ClipsWidget>();
         sourcesWindow = std::make_unique<mechanizm::SourcesWidget>();
+        sequencesWindow = std::make_unique<mechanizm::SequencesWidget>();
         editorWindow = std::make_unique<mechanizm::EditorWidget>();
 
         QObject::connect(launcherWindow.get(), &mechanizm::LauncherWidget::newProject, 
@@ -34,6 +35,7 @@ namespace mechanizm {
 
         clipsWindow->show();
         sourcesWindow->show();
+        sequencesWindow->show();
         launcherWindow->hide();
     }
 
@@ -44,6 +46,7 @@ namespace mechanizm {
 
         clipsWindow->show();
         sourcesWindow->show();
+        sequencesWindow->show();
         launcherWindow->hide();
     }
 
@@ -57,7 +60,15 @@ namespace mechanizm {
             sourcesWindow.get(), &mechanizm::SourcesWidget::setSources);
 
         QObject::connect(sourcesWindow.get(), &mechanizm::SourcesWidget::importFileSelected,
-            project.get(), &mechanizm::Project::importFile);
+            project.get(), &mechanizm::Project::importSourceFile);
+
+
+        QObject::connect(project.get(), &mechanizm::Project::sequencesChanged,
+            sequencesWindow.get(), &mechanizm::SequencesWidget::setSequences);
+
+        QObject::connect(sequencesWindow.get(), &mechanizm::SequencesWidget::importFileSelected,
+            project.get(), &mechanizm::Project::importSequenceFile);
+
 
         QObject::connect(sourcesWindow.get(), &mechanizm::SourcesWidget::newClip,
             project.get(), &mechanizm::Project::newClip);

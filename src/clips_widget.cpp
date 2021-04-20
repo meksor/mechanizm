@@ -18,7 +18,7 @@ namespace mechanizm {
 
     void ClipsWidget::updateList() {
         list->clear();
-        for (auto it = clips.begin(); it != clips.end(); ++it) {
+        for (auto it : clips) {
             QString name = (*it)->getName();
             list->addItem(name);
         }

@@ -6,12 +6,14 @@ add_executable(
     gui/editor_widget.cpp
     gui/player_widget.cpp
     gui/sources_widget.cpp
+    gui/sequences_widget.cpp
     gui/player_widget.cpp
     gui/launcher_widget.cpp
     gui/application.cpp
 
     clip.cpp
     source.cpp
+    sequence.cpp
     project.cpp
     json.cpp
     main.cpp)

@@ -1,5 +1,4 @@
 #include "clips_widget.h"
-#include <QDebug>
 
 namespace mechanizm {
     ClipsWidget::ClipsWidget(QWidget *parent) : QWidget(parent) {
@@ -31,7 +30,6 @@ namespace mechanizm {
     }
 
     void ClipsWidget::keyPressEvent(QKeyEvent *event) {
-        qDebug() << event;
         switch (event->key()) {
         case Qt::Key_E:
             event->accept();
