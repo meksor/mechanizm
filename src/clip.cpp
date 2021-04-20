@@ -64,5 +64,4 @@ namespace mechanizm {
         source = std::make_shared<mechanizm::Source>(sourcePath);
         rythmicPoints.SetJsonValue(root["rythmicPoints"]);
     }
-  
 }

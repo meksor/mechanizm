@@ -44,6 +44,19 @@ ExternalProject_Add(libopenshot-dl
 SET(OS_INCLUDE_DIR ${CMAKE_CURRENT_BINARY_DIR}/third/include/libopenshot/)
 SET(OS_LIB_DIR ${CMAKE_CURRENT_BINARY_DIR}/third/lib)
 
+
+ExternalProject_Add(cxxmidi-dl
+  GIT_REPOSITORY "https://github.com/5tan/cxxmidi"
+  PREFIX ${CMAKE_CURRENT_BINARY_DIR}/third
+  BUILD_COMMAND ""
+  CONFIGURE_COMMAND ""
+  INSTALL_COMMAND 
+    mkdir -p ${CMAKE_CURRENT_BINARY_DIR}/third/include/cxxmidi &&
+    cp -r ${CMAKE_CURRENT_BINARY_DIR}/third/src/cxxmidi-dl/include/cxxmidi/ ${CMAKE_CURRENT_BINARY_DIR}/third/include/;
+)
+
+SET(CM_INCLUDE_DIR ${CMAKE_CURRENT_BINARY_DIR}/third/include/)
+
 add_library(libopenshot-audio SHARED IMPORTED)
 set_target_properties(libopenshot-audio PROPERTIES IMPORTED_LOCATION ${OSA_LIB_DIR}/libopenshot-audio.so)
 include_directories(${OSA_INCLUDE_DIR})
@@ -53,6 +66,10 @@ add_library(libopenshot SHARED IMPORTED)
 set_target_properties(libopenshot PROPERTIES IMPORTED_LOCATION ${OS_LIB_DIR}/libopenshot.so)
 include_directories(${OS_INCLUDE_DIR})
 #link_directories(${OS_LIB_DIR})
+
+add_library(cxxmidi SHARED IMPORTED)
+include_directories(${CM_INCLUDE_DIR})
+
 
 add_subdirectory(src)
 include_directories(src)

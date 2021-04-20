@@ -2,15 +2,16 @@
 add_executable(
     mechanizm 
 
-    clips_widget.cpp
-    editor_widget.cpp
-    player_widget.cpp
-    sources_widget.cpp
-    player_widget.cpp
+    gui/clips_widget.cpp
+    gui/editor_widget.cpp
+    gui/player_widget.cpp
+    gui/sources_widget.cpp
+    gui/player_widget.cpp
+    gui/launcher_widget.cpp
+    gui/application.cpp
+
     clip.cpp
     source.cpp
     project.cpp
     json.cpp
-    application.cpp
-    launcher_widget.cpp
     main.cpp)
