@@ -1,5 +1,4 @@
 #include <QFileDialog>
-#include <QDebug>
 
 #include "sources_widget.h"
 
@@ -49,7 +48,6 @@ namespace mechanizm {
     }
 
     void SourcesWidget::keyPressEvent(QKeyEvent *event) {
-        qDebug() << event;
         switch (event->key()) {
         case Qt::Key_I:
             this->openImportDialogue();

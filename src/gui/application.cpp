@@ -36,7 +36,7 @@ namespace mechanizm {
         clipsWindow->show();
         sourcesWindow->show();
         sequencesWindow->show();
-        launcherWindow->hide();
+        launcherWindow->close();
     }
 
     void Application::newProject(QString name, QString dirPath) {
@@ -47,7 +47,7 @@ namespace mechanizm {
         clipsWindow->show();
         sourcesWindow->show();
         sequencesWindow->show();
-        launcherWindow->hide();
+        launcherWindow->close();
     }
 
     void Application::openClipEditor(mechanizm::Clip::shared_ptr c) {
