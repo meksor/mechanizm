@@ -2,7 +2,199 @@
 	"name" : "2",
 	"rythmicPoints" : 
 	{
-		"Points" : []
+		"Points" : 
+		[
+			{
+				"co" : 
+				{
+					"X" : 1825.0,
+					"Y" : 73.0
+				},
+				"handle_left" : 
+				{
+					"X" : 0.5,
+					"Y" : 1.0
+				},
+				"handle_right" : 
+				{
+					"X" : 0.5,
+					"Y" : 0.0
+				},
+				"handle_type" : 0,
+				"interpolation" : 0
+			},
+			{
+				"co" : 
+				{
+					"X" : 1847.0,
+					"Y" : 73.879997253417969
+				},
+				"handle_left" : 
+				{
+					"X" : 0.5,
+					"Y" : 1.0
+				},
+				"handle_right" : 
+				{
+					"X" : 0.5,
+					"Y" : 0.0
+				},
+				"handle_type" : 0,
+				"interpolation" : 0
+			},
+			{
+				"co" : 
+				{
+					"X" : 1870.0,
+					"Y" : 74.800003051757812
+				},
+				"handle_left" : 
+				{
+					"X" : 0.5,
+					"Y" : 1.0
+				},
+				"handle_right" : 
+				{
+					"X" : 0.5,
+					"Y" : 0.0
+				},
+				"handle_type" : 0,
+				"interpolation" : 0
+			},
+			{
+				"co" : 
+				{
+					"X" : 1878.0,
+					"Y" : 75.120002746582031
+				},
+				"handle_left" : 
+				{
+					"X" : 0.5,
+					"Y" : 1.0
+				},
+				"handle_right" : 
+				{
+					"X" : 0.5,
+					"Y" : 0.0
+				},
+				"handle_type" : 0,
+				"interpolation" : 0
+			},
+			{
+				"co" : 
+				{
+					"X" : 1886.0,
+					"Y" : 75.44000244140625
+				},
+				"handle_left" : 
+				{
+					"X" : 0.5,
+					"Y" : 1.0
+				},
+				"handle_right" : 
+				{
+					"X" : 0.5,
+					"Y" : 0.0
+				},
+				"handle_type" : 0,
+				"interpolation" : 0
+			},
+			{
+				"co" : 
+				{
+					"X" : 1892.0,
+					"Y" : 75.680000305175781
+				},
+				"handle_left" : 
+				{
+					"X" : 0.5,
+					"Y" : 1.0
+				},
+				"handle_right" : 
+				{
+					"X" : 0.5,
+					"Y" : 0.0
+				},
+				"handle_type" : 0,
+				"interpolation" : 0
+			},
+			{
+				"co" : 
+				{
+					"X" : 1906.0,
+					"Y" : 76.239997863769531
+				},
+				"handle_left" : 
+				{
+					"X" : 0.5,
+					"Y" : 1.0
+				},
+				"handle_right" : 
+				{
+					"X" : 0.5,
+					"Y" : 0.0
+				},
+				"handle_type" : 0,
+				"interpolation" : 0
+			},
+			{
+				"co" : 
+				{
+					"X" : 1921.0,
+					"Y" : 76.839996337890625
+				},
+				"handle_left" : 
+				{
+					"X" : 0.5,
+					"Y" : 1.0
+				},
+				"handle_right" : 
+				{
+					"X" : 0.5,
+					"Y" : 0.0
+				},
+				"handle_type" : 0,
+				"interpolation" : 0
+			},
+			{
+				"co" : 
+				{
+					"X" : 1950.0,
+					"Y" : 78.0
+				},
+				"handle_left" : 
+				{
+					"X" : 0.5,
+					"Y" : 1.0
+				},
+				"handle_right" : 
+				{
+					"X" : 0.5,
+					"Y" : 0.0
+				},
+				"handle_type" : 0,
+				"interpolation" : 0
+			},
+			{
+				"co" : 
+				{
+					"X" : 1986.0,
+					"Y" : 79.44000244140625
+				},
+				"handle_left" : 
+				{
+					"X" : 0.5,
+					"Y" : 1.0
+				},
+				"handle_right" : 
+				{
+					"X" : 0.5,
+					"Y" : 0.0
+				},
+				"handle_type" : 0,
+				"interpolation" : 0
+			}
+		]
 	},
 	"source" : "../../sources/b0786c4ef92b5813e79ab6509a1e3430"
 }

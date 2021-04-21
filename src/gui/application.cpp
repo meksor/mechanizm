@@ -1,5 +1,6 @@
 #include <memory>
 #include <QObject>
+#include <QDir>
 #include <QStyleFactory>
 
 #include "application.h"
@@ -13,52 +14,64 @@ namespace mechanizm {
         this->setApplicationName("mechanizm");
 
         launcherWindow = std::make_unique<mechanizm::LauncherWidget>();
-        clipsWindow = std::make_unique<mechanizm::ClipsWidget>();
         sourcesWindow = std::make_unique<mechanizm::SourcesWidget>();
         sequencesWindow = std::make_unique<mechanizm::SequencesWidget>();
-        editorWindow = std::make_unique<mechanizm::EditorWidget>();
+
+        clipsWindow = std::make_unique<mechanizm::ClipsWidget>();
+        clipEditorWindow = std::make_unique<mechanizm::ClipEditorWidget>();
+
+        mappingsWindow = std::make_unique<mechanizm::MappingsWidget>();
+        mappingEditorWindow = std::make_unique<mechanizm::MappingEditorWidget>();
 
         QObject::connect(launcherWindow.get(), &mechanizm::LauncherWidget::newProject, 
                 this, &Application::newProject);
         QObject::connect(launcherWindow.get(), &mechanizm::LauncherWidget::openProjectDirectory, 
                 this, &Application::openProjectDirectory);
+
         QObject::connect(clipsWindow.get(), &mechanizm::ClipsWidget::clipEditorRequested,
             this, &mechanizm::Application::openClipEditor);
+        QObject::connect(mappingsWindow.get(), &mechanizm::MappingsWidget::mappingEditorRequested,
+            this, &mechanizm::Application::openMappingEditor);
 
         launcherWindow->show();
     }
 
     void Application::openProjectDirectory(QString dirPath) {
-        setProject(std::make_shared<mechanizm::Project>(dirPath));
+        QDir projectDir(dirPath);
+        setProject(std::make_shared<mechanizm::Project>(projectDir));
         connectProjectSignals();
-        project->loadFromDisk();
-
-        clipsWindow->show();
-        sourcesWindow->show();
-        sequencesWindow->show();
-        launcherWindow->close();
+        showWindows();
     }
 
     void Application::newProject(QString name, QString dirPath) {
-        setProject(std::make_shared<mechanizm::Project>(dirPath, name));
+        QDir projectDir(dirPath);
+        setProject(std::make_shared<mechanizm::Project>(projectDir, name));
         connectProjectSignals();
-        project->loadFromDisk();
+        showWindows();
+    }
 
+    void Application::showWindows() {
         clipsWindow->show();
         sourcesWindow->show();
         sequencesWindow->show();
+        mappingsWindow->show();
         launcherWindow->close();
     }
 
-    void Application::openClipEditor(mechanizm::Clip::shared_ptr c) {
-        editorWindow->setClip(c);
-        editorWindow->show();
-    }   
+    void Application::openClipEditor(mechanizm::Clip::shared_ptr clip) {
+        clipEditorWindow->setClip(clip);
+        clipEditorWindow->show();
+    }
+
+    void Application::openMappingEditor(mechanizm::Mapping::shared_ptr mapping) {
+        mappingEditorWindow->setMapping(mapping);
+        mappingEditorWindow->show();
+    }
 
     void Application::connectProjectSignals() {
         QObject::connect(project.get(), &mechanizm::Project::sourcesChanged,
             sourcesWindow.get(), &mechanizm::SourcesWidget::setSources);
-
+      
         QObject::connect(sourcesWindow.get(), &mechanizm::SourcesWidget::importFileSelected,
             project.get(), &mechanizm::Project::importSourceFile);
 
@@ -70,11 +83,27 @@ namespace mechanizm {
             project.get(), &mechanizm::Project::importSequenceFile);
 
 
+        QObject::connect(project.get(), &mechanizm::Project::clipsChanged,
+            clipsWindow.get(), &mechanizm::ClipsWidget::setClips);
+
         QObject::connect(sourcesWindow.get(), &mechanizm::SourcesWidget::newClip,
             project.get(), &mechanizm::Project::newClip);
 
-        QObject::connect(project.get(), &mechanizm::Project::clipsChanged,
-            clipsWindow.get(), &mechanizm::ClipsWidget::setClips);
+
+        QObject::connect(project.get(), &mechanizm::Project::mappingsChanged,
+            mappingsWindow.get(), &mechanizm::MappingsWidget::setMappings);
+
+        QObject::connect(sequencesWindow.get(), &mechanizm::SequencesWidget::newMapping,
+            this, &Application::newMappingRequested);
+
+        QObject::connect(this, &Application::newMapping,
+            project.get(), &mechanizm::Project::newMapping);
+
+        project->emitAllSignals();
+    }
+
+    void Application::newMappingRequested() {
+        emit newMapping(clipsWindow->currentClip(), sequencesWindow->currentSequence());
     }
 
     void Application::setProject(mechanizm::Project::shared_ptr p) {

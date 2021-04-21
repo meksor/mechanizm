@@ -1,5 +1,4 @@
 #include <QCryptographicHash>
-#include <QTextStream>
 
 #include <FFmpegReader.h>
 #include <FFmpegWriter.h>
@@ -12,15 +11,10 @@ namespace mechanizm {
         if (importFile.open(QIODevice::ReadOnly)) {
             QByteArray fileData = importFile.readAll();
             fileHash = QCryptographicHash::hash(fileData, QCryptographicHash::Md5).toHex();
-            name = fileHash;
         } 
+        name = importFile.fileName().mid(importFile.fileName().lastIndexOf("/"));
 
-        rootDir = QDir(projectDir.absoluteFilePath("sources/" + fileHash));
-        if (!rootDir.exists()) {
-            rootDir.mkpath(".");
-            rootDir.mkpath("source/");
-            rootDir.mkpath("proxy/");
-        }
+        mechanizm::JsonStorable::create(projectDir);
 
         QString sourceExtension = importFile.fileName().mid(importFile.fileName().lastIndexOf("."));
         filePath = "source/source" + sourceExtension;
@@ -28,41 +22,21 @@ namespace mechanizm {
         
         if (importFile.copy(absFilePath)) {
             this->makeProxyMedia();
-            saveToDisk();
+            mechanizm::JsonStorable::saveToDisk();
         } // TODO: Else Error
     }
 
-    Source::Source(QString dirPath) : rootDir(QDir(dirPath)) {
-        QFile jsonFile(rootDir.filePath("source.json"));
-
-        if (jsonFile.open(QIODevice::ReadOnly)) {
-            QByteArray fileData = jsonFile.readAll();  
-            this->SetJson(fileData.toStdString());
-        } else {
-            // TODO: Error: Cannot open file.
-        }
-    }
-
-    void Source::saveToDisk() {
-        QFile jsonFile(rootDir.filePath("source.json"));
-        if (jsonFile.open(QIODevice::ReadWrite)) {
-            QTextStream stream(&jsonFile);
-            stream << QString(Json().c_str());
-            jsonFile.close();
-        }
-    }
-
-    QString Source::getRelativePath(QDir dir) {
-        return dir.relativeFilePath(rootDir.absolutePath());
+    Source::Source(QDir &rootDir) {
+        mechanizm::JsonStorable::loadFromDisk(rootDir);
     }
 
     void Source::makeProxyMedia() {
         openshot::FFmpegReader reader(rootDir.filePath(filePath).toStdString());
         reader.Open();
 
-        proxyPath = rootDir.filePath("proxy/480.mp4");
+        proxyPath = "./proxy/480.mp4";
 
-        openshot::FFmpegWriter writer(proxyPath.toStdString());
+        openshot::FFmpegWriter writer(rootDir.filePath(proxyPath).toStdString());
 
         int width = reader.info.display_ratio.ToFloat() * 480;
         writer.SetVideoOptions(true, "libx264", reader.info.fps, 
@@ -76,6 +50,12 @@ namespace mechanizm {
         writer.Open();
         writer.WriteFrame(&reader, 1, reader.info.video_length);
         writer.Close();
+    }
+
+    void Source::setupDirectory() {
+        rootDir.mkpath(".");
+        rootDir.mkpath("source/");
+        rootDir.mkpath("proxy/");
     }
 
     Json::Value Source::JsonValue() const {
