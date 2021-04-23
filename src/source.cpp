@@ -38,7 +38,11 @@ namespace mechanizm {
         reader.Open();
         int height = std::min(reader.info.height, 480);
 
+<<<<<<< HEAD
         proxyPath = QString( "./proxy/%1.mp4").arg(height);
+=======
+        proxyPath = "./proxy/480.mp4";
+>>>>>>> d588b0f1827d5288dfc1939d3835610e7da68e39
 
         openshot::FFmpegWriter writer(rootDir.filePath(proxyPath).toStdString());
 
