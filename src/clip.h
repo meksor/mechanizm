@@ -15,38 +15,36 @@
 
 namespace mechanizm {
 
-    class Clip : public openshot::Clip, public mechanizm::JsonSerializable {
-
-    using mechanizm::JsonSerializable::SetJson;
-    using mechanizm::JsonSerializable::Json;
-
+    class Clip 
+    : public openshot::Clip, public mechanizm::JsonStorable {
+    
     public:
         typedef std::shared_ptr<Clip> shared_ptr;
 
         Clip(QString name, mechanizm::Source::shared_ptr source, QDir &projectDir);
-        Clip(QString dirPath);
-
+        Clip(QDir &rootDir);
         virtual ~Clip() {};
 
         void setName(QString n) { name = n; };
-        QString getName() { return name; };
-        QString getRelativePath(QDir dir);
-        std::shared_ptr<openshot::FFmpegReader> getProxyReader() { return proxyReader; };
+        QString getName() const { return name; };
+        std::shared_ptr<openshot::FFmpegReader> getProxyReader() const { return proxyReader; };
 
         Json::Value JsonValue() const override;
         void SetJsonValue(const Json::Value root) override;
+
 
         void addRythmicPoint(long x, float y);
         openshot::Keyframe getRythmicPoints() { return rythmicPoints; };
         
     protected:
-        void saveToDisk();
+        virtual QString getDirectoryPath() const override { return "clips/" + name; };
+        virtual QString getJsonFileName() const override { return "clip.json"; };
+
         openshot::Keyframe rythmicPoints;
 
     private:
         void initReader();
 
-        QDir rootDir;
         QString name;
         mechanizm::Source::shared_ptr source;
         std::shared_ptr<openshot::FFmpegReader> proxyReader;

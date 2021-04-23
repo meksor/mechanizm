@@ -28,8 +28,8 @@ namespace mechanizm {
 
     void SourcesWidget::updateList() {
         list->clear();
-        for (auto it = sources.begin(); it != sources.end(); ++it) {
-            QString name = (*it)->getFileHash();
+        for (auto source : sources) {
+            QString name = source->getFileHash();
             list->addItem(name);
         }
     }

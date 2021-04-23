@@ -9,15 +9,16 @@
 
 namespace mechanizm {
 
-    class EditorWidget : public QWidget {
+    class ClipEditorWidget : public QWidget {
         Q_OBJECT
     public:
-        typedef std::unique_ptr<EditorWidget> unique_ptr;
+        typedef std::unique_ptr<ClipEditorWidget> unique_ptr;
 
-        explicit EditorWidget(QWidget *parent = 0);
-        virtual ~EditorWidget() {};
+        explicit ClipEditorWidget(QWidget *parent = 0);
+        virtual ~ClipEditorWidget() {};
 
         void setClip(mechanizm::Clip::shared_ptr c);
+        void onCellSelected(int row, int column);
 
     protected:
         virtual void keyPressEvent(QKeyEvent *event) override;
@@ -32,5 +33,4 @@ namespace mechanizm {
         std::unique_ptr<QHBoxLayout> hbox;
         std::unique_ptr<mechanizm::PlayerWidget> player;
     };
-
 }

@@ -1,0 +1,49 @@
+{
+	"clips" : 
+	[
+		"clips/0",
+		"clips/1",
+		"clips/2",
+		"clips/3",
+		"clips/4",
+		"clips/5",
+		"clips/6"
+	],
+	"mappings" : 
+	[
+		"mappings/2",
+		"mappings/3",
+		"mappings/3",
+		"mappings/3",
+		"mappings/4",
+		"mappings/4",
+		"mappings/4",
+		"mappings/4",
+		"mappings/4",
+		"mappings/4",
+		"mappings/4",
+		"mappings/4",
+		"mappings/4",
+		"mappings/4",
+		"mappings/4",
+		"mappings/4",
+		"mappings/5",
+		"mappings/5",
+		"mappings/5",
+		"mappings/5",
+		"mappings/5",
+		"mappings/5",
+		"mappings/6"
+	],
+	"name" : "pro2",
+	"sequences" : 
+	[
+		"sequences/80a5c5a3b1b872c145b0a4a31e943259"
+	],
+	"sources" : 
+	[
+		"sources/b0786c4ef92b5813e79ab6509a1e3430",
+		"sources/9a634f604899df9520c008bf51d866a4",
+		"sources/5c054b3be792d2a69128d54b0e8637b8"
+	]
+}

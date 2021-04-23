@@ -5,7 +5,6 @@ namespace mechanizm {
         hbox = std::make_unique<QHBoxLayout>(this);
         list = std::make_unique<QListWidget>();
         list->setFocusPolicy(Qt::NoFocus);
-        // table->setEditTriggers(QAbstractItemView::DoubleClicked);
 
         this->setFixedSize(480, 480);
         hbox->addWidget(list.get());
@@ -19,8 +18,8 @@ namespace mechanizm {
 
     void ClipsWidget::updateList() {
         list->clear();
-        for (auto it = clips.begin(); it != clips.end(); ++it) {
-            QString name = (*it)->getName();
+        for (auto clip : clips) {
+            QString name = clip->getName();
             list->addItem(name);
         }
     }

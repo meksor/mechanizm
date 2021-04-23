@@ -6,6 +6,7 @@
 #include <QHBoxLayout>
 
 #include "sequence.h"
+#include "clip.h"
 
 namespace mechanizm {
 
@@ -23,7 +24,8 @@ namespace mechanizm {
 
     signals:
         void importFileSelected(QString filePath);
-
+        void newMapping();
+        
     protected:
         void keyPressEvent(QKeyEvent *event) override;
 

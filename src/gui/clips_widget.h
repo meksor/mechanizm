@@ -18,10 +18,10 @@ namespace mechanizm {
         virtual ~ClipsWidget() {};
 
         void setClips(std::vector<mechanizm::Clip::shared_ptr> c);
+        mechanizm::Clip::shared_ptr currentClip();
 
     protected:
         virtual void keyPressEvent(QKeyEvent *event) override;
-        mechanizm::Clip::shared_ptr currentClip();
 
     signals:
         void clipEditorRequested(mechanizm::Clip::shared_ptr c);

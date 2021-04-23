@@ -24,7 +24,7 @@ namespace mechanizm {
         QString dirPath;
         if (result) {
             dirPath = dialog.selectedFiles()[0];
-            QString name = dirPath.mid(dirPath.lastIndexOf("/") + 1 );
+            QString name = dirPath.mid(dirPath.lastIndexOf("/") + 1);
             emit newProject(name, dirPath);
         }
     }

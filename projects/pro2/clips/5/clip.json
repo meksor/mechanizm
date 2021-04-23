@@ -1,0 +1,785 @@
+{
+	"alpha" : 
+	{
+		"Points" : 
+		[
+			{
+				"co" : 
+				{
+					"X" : 1.0,
+					"Y" : 1.0
+				},
+				"interpolation" : 2
+			}
+		]
+	},
+	"anchor" : 0,
+	"channel_filter" : 
+	{
+		"Points" : 
+		[
+			{
+				"co" : 
+				{
+					"X" : 1.0,
+					"Y" : -1.0
+				},
+				"interpolation" : 2
+			}
+		]
+	},
+	"channel_mapping" : 
+	{
+		"Points" : 
+		[
+			{
+				"co" : 
+				{
+					"X" : 1.0,
+					"Y" : -1.0
+				},
+				"interpolation" : 2
+			}
+		]
+	},
+	"crop_height" : 
+	{
+		"Points" : 
+		[
+			{
+				"co" : 
+				{
+					"X" : 1.0,
+					"Y" : 1.0
+				},
+				"interpolation" : 2
+			}
+		]
+	},
+	"crop_width" : 
+	{
+		"Points" : 
+		[
+			{
+				"co" : 
+				{
+					"X" : 1.0,
+					"Y" : 1.0
+				},
+				"interpolation" : 2
+			}
+		]
+	},
+	"crop_x" : 
+	{
+		"Points" : 
+		[
+			{
+				"co" : 
+				{
+					"X" : 1.0,
+					"Y" : 0.0
+				},
+				"interpolation" : 2
+			}
+		]
+	},
+	"crop_y" : 
+	{
+		"Points" : 
+		[
+			{
+				"co" : 
+				{
+					"X" : 1.0,
+					"Y" : 0.0
+				},
+				"interpolation" : 2
+			}
+		]
+	},
+	"display" : 0,
+	"duration" : 0.0,
+	"effects" : [],
+	"end" : 0.0,
+	"gravity" : 4,
+	"has_audio" : 
+	{
+		"Points" : 
+		[
+			{
+				"co" : 
+				{
+					"X" : 1.0,
+					"Y" : -1.0
+				},
+				"interpolation" : 2
+			}
+		]
+	},
+	"has_video" : 
+	{
+		"Points" : 
+		[
+			{
+				"co" : 
+				{
+					"X" : 1.0,
+					"Y" : -1.0
+				},
+				"interpolation" : 2
+			}
+		]
+	},
+	"id" : "",
+	"layer" : 0,
+	"location_x" : 
+	{
+		"Points" : 
+		[
+			{
+				"co" : 
+				{
+					"X" : 1.0,
+					"Y" : 0.0
+				},
+				"interpolation" : 2
+			}
+		]
+	},
+	"location_y" : 
+	{
+		"Points" : 
+		[
+			{
+				"co" : 
+				{
+					"X" : 1.0,
+					"Y" : 0.0
+				},
+				"interpolation" : 2
+			}
+		]
+	},
+	"mixing" : 0,
+	"name" : "5",
+	"origin_x" : 
+	{
+		"Points" : 
+		[
+			{
+				"co" : 
+				{
+					"X" : 1.0,
+					"Y" : 0.5
+				},
+				"interpolation" : 2
+			}
+		]
+	},
+	"origin_y" : 
+	{
+		"Points" : 
+		[
+			{
+				"co" : 
+				{
+					"X" : 1.0,
+					"Y" : 0.5
+				},
+				"interpolation" : 2
+			}
+		]
+	},
+	"perspective_c1_x" : 
+	{
+		"Points" : 
+		[
+			{
+				"co" : 
+				{
+					"X" : 1.0,
+					"Y" : -1.0
+				},
+				"interpolation" : 2
+			}
+		]
+	},
+	"perspective_c1_y" : 
+	{
+		"Points" : 
+		[
+			{
+				"co" : 
+				{
+					"X" : 1.0,
+					"Y" : -1.0
+				},
+				"interpolation" : 2
+			}
+		]
+	},
+	"perspective_c2_x" : 
+	{
+		"Points" : 
+		[
+			{
+				"co" : 
+				{
+					"X" : 1.0,
+					"Y" : -1.0
+				},
+				"interpolation" : 2
+			}
+		]
+	},
+	"perspective_c2_y" : 
+	{
+		"Points" : 
+		[
+			{
+				"co" : 
+				{
+					"X" : 1.0,
+					"Y" : -1.0
+				},
+				"interpolation" : 2
+			}
+		]
+	},
+	"perspective_c3_x" : 
+	{
+		"Points" : 
+		[
+			{
+				"co" : 
+				{
+					"X" : 1.0,
+					"Y" : -1.0
+				},
+				"interpolation" : 2
+			}
+		]
+	},
+	"perspective_c3_y" : 
+	{
+		"Points" : 
+		[
+			{
+				"co" : 
+				{
+					"X" : 1.0,
+					"Y" : -1.0
+				},
+				"interpolation" : 2
+			}
+		]
+	},
+	"perspective_c4_x" : 
+	{
+		"Points" : 
+		[
+			{
+				"co" : 
+				{
+					"X" : 1.0,
+					"Y" : -1.0
+				},
+				"interpolation" : 2
+			}
+		]
+	},
+	"perspective_c4_y" : 
+	{
+		"Points" : 
+		[
+			{
+				"co" : 
+				{
+					"X" : 1.0,
+					"Y" : -1.0
+				},
+				"interpolation" : 2
+			}
+		]
+	},
+	"position" : 0.0,
+	"reader" : {},
+	"rotation" : 
+	{
+		"Points" : 
+		[
+			{
+				"co" : 
+				{
+					"X" : 1.0,
+					"Y" : 0.0
+				},
+				"interpolation" : 2
+			}
+		]
+	},
+	"rythmicPoints" : 
+	{
+		"Points" : 
+		[
+			{
+				"co" : 
+				{
+					"X" : 132.0,
+					"Y" : 4.4000000953674316
+				},
+				"handle_left" : 
+				{
+					"X" : 0.5,
+					"Y" : 1.0
+				},
+				"handle_right" : 
+				{
+					"X" : 0.5,
+					"Y" : 0.0
+				},
+				"handle_type" : 0,
+				"interpolation" : 0
+			},
+			{
+				"co" : 
+				{
+					"X" : 139.0,
+					"Y" : 4.6333332061767578
+				},
+				"handle_left" : 
+				{
+					"X" : 0.5,
+					"Y" : 1.0
+				},
+				"handle_right" : 
+				{
+					"X" : 0.5,
+					"Y" : 0.0
+				},
+				"handle_type" : 0,
+				"interpolation" : 0
+			},
+			{
+				"co" : 
+				{
+					"X" : 165.0,
+					"Y" : 5.5
+				},
+				"handle_left" : 
+				{
+					"X" : 0.5,
+					"Y" : 1.0
+				},
+				"handle_right" : 
+				{
+					"X" : 0.5,
+					"Y" : 0.0
+				},
+				"handle_type" : 0,
+				"interpolation" : 0
+			},
+			{
+				"co" : 
+				{
+					"X" : 174.0,
+					"Y" : 5.8000001907348633
+				},
+				"handle_left" : 
+				{
+					"X" : 0.5,
+					"Y" : 1.0
+				},
+				"handle_right" : 
+				{
+					"X" : 0.5,
+					"Y" : 0.0
+				},
+				"handle_type" : 0,
+				"interpolation" : 0
+			},
+			{
+				"co" : 
+				{
+					"X" : 200.0,
+					"Y" : 6.6666665077209473
+				},
+				"handle_left" : 
+				{
+					"X" : 0.5,
+					"Y" : 1.0
+				},
+				"handle_right" : 
+				{
+					"X" : 0.5,
+					"Y" : 0.0
+				},
+				"handle_type" : 0,
+				"interpolation" : 0
+			},
+			{
+				"co" : 
+				{
+					"X" : 207.0,
+					"Y" : 6.9000000953674316
+				},
+				"handle_left" : 
+				{
+					"X" : 0.5,
+					"Y" : 1.0
+				},
+				"handle_right" : 
+				{
+					"X" : 0.5,
+					"Y" : 0.0
+				},
+				"handle_type" : 0,
+				"interpolation" : 0
+			},
+			{
+				"co" : 
+				{
+					"X" : 235.0,
+					"Y" : 7.8333334922790527
+				},
+				"handle_left" : 
+				{
+					"X" : 0.5,
+					"Y" : 1.0
+				},
+				"handle_right" : 
+				{
+					"X" : 0.5,
+					"Y" : 0.0
+				},
+				"handle_type" : 0,
+				"interpolation" : 0
+			},
+			{
+				"co" : 
+				{
+					"X" : 245.0,
+					"Y" : 8.1666669845581055
+				},
+				"handle_left" : 
+				{
+					"X" : 0.5,
+					"Y" : 1.0
+				},
+				"handle_right" : 
+				{
+					"X" : 0.5,
+					"Y" : 0.0
+				},
+				"handle_type" : 0,
+				"interpolation" : 0
+			},
+			{
+				"co" : 
+				{
+					"X" : 271.0,
+					"Y" : 9.0333337783813477
+				},
+				"handle_left" : 
+				{
+					"X" : 0.5,
+					"Y" : 1.0
+				},
+				"handle_right" : 
+				{
+					"X" : 0.5,
+					"Y" : 0.0
+				},
+				"handle_type" : 0,
+				"interpolation" : 0
+			},
+			{
+				"co" : 
+				{
+					"X" : 278.0,
+					"Y" : 9.2666664123535156
+				},
+				"handle_left" : 
+				{
+					"X" : 0.5,
+					"Y" : 1.0
+				},
+				"handle_right" : 
+				{
+					"X" : 0.5,
+					"Y" : 0.0
+				},
+				"handle_type" : 0,
+				"interpolation" : 0
+			},
+			{
+				"co" : 
+				{
+					"X" : 304.0,
+					"Y" : 10.133333206176758
+				},
+				"handle_left" : 
+				{
+					"X" : 0.5,
+					"Y" : 1.0
+				},
+				"handle_right" : 
+				{
+					"X" : 0.5,
+					"Y" : 0.0
+				},
+				"handle_type" : 0,
+				"interpolation" : 0
+			},
+			{
+				"co" : 
+				{
+					"X" : 314.0,
+					"Y" : 10.466666221618652
+				},
+				"handle_left" : 
+				{
+					"X" : 0.5,
+					"Y" : 1.0
+				},
+				"handle_right" : 
+				{
+					"X" : 0.5,
+					"Y" : 0.0
+				},
+				"handle_type" : 0,
+				"interpolation" : 0
+			},
+			{
+				"co" : 
+				{
+					"X" : 339.0,
+					"Y" : 11.300000190734863
+				},
+				"handle_left" : 
+				{
+					"X" : 0.5,
+					"Y" : 1.0
+				},
+				"handle_right" : 
+				{
+					"X" : 0.5,
+					"Y" : 0.0
+				},
+				"handle_type" : 0,
+				"interpolation" : 0
+			},
+			{
+				"co" : 
+				{
+					"X" : 350.0,
+					"Y" : 11.666666984558105
+				},
+				"handle_left" : 
+				{
+					"X" : 0.5,
+					"Y" : 1.0
+				},
+				"handle_right" : 
+				{
+					"X" : 0.5,
+					"Y" : 0.0
+				},
+				"handle_type" : 0,
+				"interpolation" : 0
+			}
+		]
+	},
+	"scale" : 1,
+	"scale_x" : 
+	{
+		"Points" : 
+		[
+			{
+				"co" : 
+				{
+					"X" : 1.0,
+					"Y" : 1.0
+				},
+				"interpolation" : 2
+			}
+		]
+	},
+	"scale_y" : 
+	{
+		"Points" : 
+		[
+			{
+				"co" : 
+				{
+					"X" : 1.0,
+					"Y" : 1.0
+				},
+				"interpolation" : 2
+			}
+		]
+	},
+	"shear_x" : 
+	{
+		"Points" : 
+		[
+			{
+				"co" : 
+				{
+					"X" : 1.0,
+					"Y" : 0.0
+				},
+				"interpolation" : 2
+			}
+		]
+	},
+	"shear_y" : 
+	{
+		"Points" : 
+		[
+			{
+				"co" : 
+				{
+					"X" : 1.0,
+					"Y" : 0.0
+				},
+				"interpolation" : 2
+			}
+		]
+	},
+	"source" : "../../sources/5c054b3be792d2a69128d54b0e8637b8",
+	"start" : 0.0,
+	"time" : 
+	{
+		"Points" : 
+		[
+			{
+				"co" : 
+				{
+					"X" : 1.0,
+					"Y" : 1.0
+				},
+				"interpolation" : 2
+			}
+		]
+	},
+	"volume" : 
+	{
+		"Points" : 
+		[
+			{
+				"co" : 
+				{
+					"X" : 1.0,
+					"Y" : 1.0
+				},
+				"interpolation" : 2
+			}
+		]
+	},
+	"wave_color" : 
+	{
+		"alpha" : 
+		{
+			"Points" : 
+			[
+				{
+					"co" : 
+					{
+						"X" : 1.0,
+						"Y" : 255.0
+					},
+					"handle_left" : 
+					{
+						"X" : 0.5,
+						"Y" : 1.0
+					},
+					"handle_right" : 
+					{
+						"X" : 0.5,
+						"Y" : 0.0
+					},
+					"handle_type" : 0,
+					"interpolation" : 0
+				}
+			]
+		},
+		"blue" : 
+		{
+			"Points" : 
+			[
+				{
+					"co" : 
+					{
+						"X" : 1.0,
+						"Y" : 255.0
+					},
+					"handle_left" : 
+					{
+						"X" : 0.5,
+						"Y" : 1.0
+					},
+					"handle_right" : 
+					{
+						"X" : 0.5,
+						"Y" : 0.0
+					},
+					"handle_type" : 0,
+					"interpolation" : 0
+				}
+			]
+		},
+		"green" : 
+		{
+			"Points" : 
+			[
+				{
+					"co" : 
+					{
+						"X" : 1.0,
+						"Y" : 123.0
+					},
+					"handle_left" : 
+					{
+						"X" : 0.5,
+						"Y" : 1.0
+					},
+					"handle_right" : 
+					{
+						"X" : 0.5,
+						"Y" : 0.0
+					},
+					"handle_type" : 0,
+					"interpolation" : 0
+				}
+			]
+		},
+		"red" : 
+		{
+			"Points" : 
+			[
+				{
+					"co" : 
+					{
+						"X" : 1.0,
+						"Y" : 0.0
+					},
+					"handle_left" : 
+					{
+						"X" : 0.5,
+						"Y" : 1.0
+					},
+					"handle_right" : 
+					{
+						"X" : 0.5,
+						"Y" : 0.0
+					},
+					"handle_type" : 0,
+					"interpolation" : 0
+				}
+			]
+		}
+	},
+	"waveform" : false
+}

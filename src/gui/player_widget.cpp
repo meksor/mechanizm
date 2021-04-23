@@ -61,7 +61,6 @@ namespace mechanizm {
     void PlayerWidget::showEvent(QShowEvent* event) {
         QWidget::showEvent(event);
         player->Seek(0);
-        player->Play();
         event->accept();
     } 
 

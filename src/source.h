@@ -25,31 +25,30 @@ namespace mechanizm {
         }
     };
 
-    class Source : public mechanizm::JsonSerializable {
+    class Source : public mechanizm::JsonStorable {
     public:
         typedef std::shared_ptr<Source> shared_ptr;
 
         Source(QFile &importFile, QDir &projectDir);
-        Source(QString dirPath);
+        Source(QDir &rootDir);
         virtual ~Source() {};
-
-        QString getRelativePath(QDir dir);
 
         QString getFilePath() { return rootDir.absoluteFilePath(filePath); }
         QString getProxyPath() { return rootDir.absoluteFilePath(proxyPath); }
         QString getFileHash() { return fileHash; }
 
-        Json::Value JsonValue () const override;
+        Json::Value JsonValue() const override;
         void SetJsonValue (const Json::Value root) override;
 
     protected:
-        void saveToDisk();
+        virtual QString getDirectoryPath() const override { return "sources/" + fileHash; };
+        virtual QString getJsonFileName() const override { return "source.json"; };
+        virtual void setupDirectory() override;
 
     private:        
         void makeProxyMedia();
 
         QString name;
-        QDir rootDir;
         QString fileHash;
         QString filePath;
         QString proxyPath;
