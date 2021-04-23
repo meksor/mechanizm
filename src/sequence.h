@@ -46,9 +46,6 @@ namespace mechanizm {
         void setName(QString n) { name = n; };
         QString getName() const { return name; };
 
-        void setName(QString n) { name = n; };
-        QString getName() const { return name; };
-
         Json::Value JsonValue() const override;
         void SetJsonValue(const Json::Value root) override;
 

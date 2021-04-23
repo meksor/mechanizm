@@ -121,11 +121,7 @@ namespace mechanizm {
             loadClip(QString(clipsPaths[i].asCString()));
         emit clipsChanged(clips);
 
-<<<<<<< HEAD
         const Json::Value mappingsPaths = root["mappings"];
-=======
-        const Json::Value mappingsPaths = root["clips"];
->>>>>>> d588b0f1827d5288dfc1939d3835610e7da68e39
         for (int i = 0; i < mappingsPaths.size(); ++i )
             loadMapping(QString(mappingsPaths[i].asCString()));
         emit mappingsChanged(mappings);
