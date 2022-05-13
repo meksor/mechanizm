@@ -19,7 +19,7 @@ include_directories(/usr/include/qt/QtCore)
 
 ExternalProject_Add(libopenshot-audio-dl
   GIT_REPOSITORY "https://github.com/OpenShot/libopenshot-audio"
-  GIT_TAG "origin/develop"
+  GIT_TAG "origin/master"
   PREFIX ${CMAKE_CURRENT_BINARY_DIR}/third
   CMAKE_CACHE_ARGS
     -DCMAKE_INSTALL_PREFIX:STRING=${CMAKE_CURRENT_BINARY_DIR}/third
@@ -28,17 +28,20 @@ ExternalProject_Add(libopenshot-audio-dl
 
 SET(OSA_INCLUDE_DIR ${CMAKE_CURRENT_BINARY_DIR}/third/include/libopenshot-audio/)
 SET(OSA_LIB_DIR ${CMAKE_CURRENT_BINARY_DIR}/third/lib)
+SET(OSA_CMAKE_PATH ${CMAKE_CURRENT_BINARY_DIR}/third/src/libopenshot-audio-dl-build)
 
 ExternalProject_Add(libopenshot-dl
   GIT_REPOSITORY "https://github.com/OpenShot/libopenshot"
-  GIT_TAG "414a2cd"
+  GIT_TAG "origin/develop"
   PREFIX ${CMAKE_CURRENT_BINARY_DIR}/third
   CMAKE_CACHE_ARGS
     -DENABLE_MAGICK:BOOL=0
     -DENABLE_RUBY:BOOL=0
     -DENABLE_PYTHON:BOOL=0
+    -DENABLE_OPENCV:BOOL=0
     -DCMAKE_INSTALL_PREFIX:STRING=${CMAKE_CURRENT_BINARY_DIR}/third
     -DCMAKE_BUILD_TYPE:STRING=${CMAKE_BUILD_TYPE}
+    -DCMAKE_PREFIX_PATH:STRING=${OSA_CMAKE_PATH}
 )
 
 SET(OS_INCLUDE_DIR ${CMAKE_CURRENT_BINARY_DIR}/third/include/libopenshot/)
