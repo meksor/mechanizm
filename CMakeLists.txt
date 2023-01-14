@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.18.0)
 project(mechanizm VERSION 0.1.0)
 
-set(CMAKE_CXX_STANDARD 14)
+set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
 # set(CMAKE_BINARY_DIR ./build)
 
@@ -32,7 +32,7 @@ SET(OSA_CMAKE_PATH ${CMAKE_CURRENT_BINARY_DIR}/third/src/libopenshot-audio-dl-bu
 
 ExternalProject_Add(libopenshot-dl
   GIT_REPOSITORY "https://github.com/OpenShot/libopenshot"
-  GIT_TAG "origin/develop"
+  GIT_TAG "664c5db821d356059f86c132e71646894e9f9d0f"
   PREFIX ${CMAKE_CURRENT_BINARY_DIR}/third
   CMAKE_CACHE_ARGS
     -DENABLE_MAGICK:BOOL=0

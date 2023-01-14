@@ -5,7 +5,6 @@
 
 namespace mechanizm {
 class TimeStep : public mechanizm::JsonSerializable {
-  Q_OBJECT
 public:
   TimeStep(const Json::Value root) { SetJsonValue(root); };
 
@@ -18,7 +17,7 @@ private:
   double note;
 };
 
-class Sequence : public mechanizm::JsonSerializable {
+class Sequence : public QObject, public mechanizm::JsonSerializable {
   Q_OBJECT
 public:
   Sequence(const Json::Value root) { SetJsonValue(root); };

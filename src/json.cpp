@@ -6,6 +6,7 @@
 #include "json.h"
 
 namespace mechanizm {
+
 std::string JsonSerializable::Json() const {
   return this->JsonValue().toStyledString();
 }
@@ -29,6 +30,7 @@ void JsonStorable::create(QDir &projectDir) {
 
 void JsonStorable::loadFromDisk(QDir &rd) {
   rootDir = rd;
+
   QFile jsonFile(rootDir.filePath(this->getJsonFileName()));
   if (jsonFile.open(QIODevice::ReadOnly)) {
     QByteArray fileData = jsonFile.readAll();

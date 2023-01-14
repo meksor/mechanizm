@@ -1,12 +1,12 @@
 #pragma once
 #include "json.h"
 #include "source.h"
+#include <QObject>
 #include <memory>
 #include <string>
 
 namespace mechanizm {
 class RythmicPoint : public mechanizm::JsonSerializable {
-  Q_OBJECT
 public:
   RythmicPoint(const Json::Value root) { SetJsonValue(root); };
 
@@ -19,10 +19,11 @@ private:
   int frame;
 };
 
-class Clip : public mechanizm::JsonSerializable {
+class Clip : public QObject, public mechanizm::JsonSerializable {
   Q_OBJECT
 public:
   Clip(const Json::Value root) { SetJsonValue(root); };
+  virtual ~Clip(){};
 
   Json::Value JsonValue() const override;
   void SetJsonValue(const Json::Value root) override;

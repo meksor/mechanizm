@@ -8,7 +8,6 @@
 namespace mechanizm {
 
 class RythmLink : public mechanizm::JsonSerializable {
-  Q_OBJECT
 public:
   enum Interpolation : int { DEFAULT = 0 };
 
@@ -27,7 +26,7 @@ private:
   double note;
 };
 
-class Mapping : public mechanizm::JsonSerializable {
+class Mapping : public QObject, public mechanizm::JsonSerializable {
   Q_OBJECT
 public:
   Mapping(const Json::Value root) { SetJsonValue(root); };

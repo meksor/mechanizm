@@ -18,8 +18,6 @@ $ make -j4
 
 ## Using
 
-I am not going to write a tutorial, but know this: everything is done with keyboard shortcuts. Check the source code for keymappings `<insert trollface here>`.
-
 ```bash
 $ ./mechanizm
 ```

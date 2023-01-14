@@ -2,16 +2,11 @@
 add_executable(
     mechanizm 
 
-    gui/mappings_widget.cpp
-    gui/mapping_editor_widget.cpp
-    gui/clips_widget.cpp
-    gui/clip_editor_widget.cpp
-    gui/player_widget.cpp
-    gui/sources_widget.cpp
-    gui/sequences_widget.cpp
-    gui/player_widget.cpp
-    gui/launcher_widget.cpp
-    gui/application.cpp
+    gui/main_window.cpp
+    gui/project_widget.cpp
+    gui/sources_window.cpp
+    gui/source_table.cpp
+    gui/source_info.cpp
 
     mapping.cpp
     clip.cpp
@@ -19,4 +14,5 @@ add_executable(
     sequence.cpp
     project.cpp
     json.cpp
+    application.cpp
     main.cpp)

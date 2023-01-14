@@ -1,4 +1,5 @@
 #include <QTextStream>
+#include <utility>
 
 #include "clip.h"
 #include "mapping.h"
@@ -11,8 +12,14 @@ Project::Project(QDir &rootDir) {
   mechanizm::JsonStorable::loadFromDisk(rootDir);
 }
 
-Project::Project(QDir &rootDir, QString name) : name(name) {
+Project::Project(QDir &rootDir, std::string name) : name(name) {
   mechanizm::JsonStorable::create(rootDir);
+  mechanizm::JsonStorable::saveToDisk();
+}
+
+void Project::setDefaults() {
+  bpm = 120.;
+  timeDivision = std::make_pair(4, 4);
   mechanizm::JsonStorable::saveToDisk();
 }
 
@@ -26,29 +33,29 @@ void Project::setupDirectory() {
 
 Json::Value Project::JsonValue() const {
   Json::Value root;
-  root["name"] = name.toStdString();
+  root["name"] = name;
   root["bpm"] = bpm;
   root["timeDivision"][0] = timeDivision.first;
   root["timeDivision"][1] = timeDivision.second;
 
   for (int i = 0; i < sources.size(); ++i)
-    root["sources"][i] = sources[i].JsonValue();
+    root["sources"][i] = sources[i]->JsonValue();
 
   for (int i = 0; i < clips.size(); ++i)
-    root["clips"][i] = clips[i].JsonValue();
+    root["clips"][i] = clips[i]->JsonValue();
 
   for (int i = 0; i < sequences.size(); ++i)
-    root["sequences"][i] = sequences[i].JsonValue();
+    root["sequences"][i] = sequences[i]->JsonValue();
 
   for (int i = 0; i < mappings.size(); ++i)
-    root["mappings"][i] = mappings[i].JsonValue();
+    root["mappings"][i] = mappings[i]->JsonValue();
 
   return root;
 }
 
 void Project::SetJsonValue(const Json::Value root) {
   name = root["name"].asCString();
-  bpm = root["bpm"].asInt();
+  bpm = root["bpm"].asDouble();
   timeDivision = std::make_pair<int, int>(root["timeDivision"][0].asInt(),
                                           root["timeDivision"][1].asInt());
 
@@ -74,21 +81,33 @@ void Project::SetJsonValue(const Json::Value root) {
 }
 
 void Project::loadSource(Json::Value json) {
-  mechanizm::Source source = mechanizm::Source(json);
+  mechanizm::Source *source = new mechanizm::Source(json);
   sources.push_back(source);
 }
+
+void Project::addSource(mechanizm::Source *source) {
+  sources.push_back(source);
+  emit sourcesChanged(sources);
+}
+
+void Project::removeSource(mechanizm::Source *source) {
+  auto item = std::find(sources.begin(), sources.end(), source);
+  sources.erase(item);
+  emit sourcesChanged(sources);
+}
+
 void Project::loadClip(Json::Value json) {
-  mechanizm::Clip clip = mechanizm::Clip(json);
+  mechanizm::Clip *clip = new mechanizm::Clip(json);
   clips.push_back(clip);
 }
 
 void Project::loadSequence(Json::Value json) {
-  mechanizm::Sequence sequence = mechanizm::Sequence(json);
+  mechanizm::Sequence *sequence = new mechanizm::Sequence(json);
   sequences.push_back(sequence);
 }
 
 void Project::loadMapping(Json::Value json) {
-  mechanizm::Mapping mapping = mechanizm::Mapping(json);
+  mechanizm::Mapping *mapping = new mechanizm::Mapping(json);
   mappings.push_back(mapping);
 }
 
