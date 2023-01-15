@@ -10,7 +10,7 @@ Json::Value TimeStep::JsonValue() const {
 }
 
 void TimeStep::SetJsonValue(const Json::Value root) {
-  id = root["id"].asUInt();
+  id = root["id"].asLargestUInt();
   note = root["note"].asDouble();
 }
 
@@ -27,9 +27,9 @@ Json::Value Sequence::JsonValue() const {
 }
 
 void Sequence::SetJsonValue(const Json::Value root) {
-  id = root["id"].asUInt();
+  id = root["id"].asLargestUInt();
   name = root["name"].asString();
-  sourceId = root["sourceId"].asUInt();
+  sourceId = root["sourceId"].asLargestUInt();
 
   const Json::Value timeSteps = root["timeSteps"];
   for (int i = 0; i < timeSteps.size(); ++i)

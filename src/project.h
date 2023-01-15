@@ -27,15 +27,18 @@ public:
   virtual void setupDirectory() override;
 
   void setBpm(double b) { bpm = b; };
-  void setName(std::string n) { name = n; };
-  void setQName(QString n) { setName(n.toStdString()); };
+  void setName(QString n) { name = n.toStdString(); };
   QString getPath() const { return this->rootDir.absolutePath(); };
 
   void loadSource(Json::Value);
   void addSource(mechanizm::Source *);
   void removeSource(mechanizm::Source *);
 
+  void connectClip(mechanizm::Clip *);
   void loadClip(Json::Value);
+  void addClip(mechanizm::Clip *);
+  void removeClip(mechanizm::Clip *);
+
   void loadSequence(Json::Value);
   void loadMapping(Json::Value);
   void setDefaults();

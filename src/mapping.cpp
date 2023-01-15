@@ -12,9 +12,9 @@ Json::Value RythmLink::JsonValue() const {
 }
 
 void RythmLink::SetJsonValue(const Json::Value root) {
-  id = root["id"].asUInt();
-  rpId = root["rpId"].asUInt();
-  tsId = root["tsId"].asUInt();
+  id = root["id"].asLargestUInt();
+  rpId = root["rpId"].asLargestUInt();
+  tsId = root["tsId"].asLargestUInt();
   nextInterpolation =
       static_cast<Interpolation>(root["nextInterpolation"].asInt());
 }
@@ -33,10 +33,10 @@ Json::Value Mapping::JsonValue() const {
 }
 
 void Mapping::SetJsonValue(const Json::Value root) {
-  id = root["id"].asUInt();
+  id = root["id"].asLargestUInt();
   name = root["name"].asString();
-  clipId = root["clipId"].asUInt();
-  sequenceId = root["sequenceId"].asUInt();
+  clipId = root["clipId"].asLargestUInt();
+  sequenceId = root["sequenceId"].asLargestUInt();
 
   const Json::Value rythmLinks = root["rythmLinks"];
   for (int i = 0; i < rythmLinks.size(); ++i)

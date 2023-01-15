@@ -32,7 +32,7 @@ SET(OSA_CMAKE_PATH ${CMAKE_CURRENT_BINARY_DIR}/third/src/libopenshot-audio-dl-bu
 
 ExternalProject_Add(libopenshot-dl
   GIT_REPOSITORY "https://github.com/OpenShot/libopenshot"
-  GIT_TAG "664c5db821d356059f86c132e71646894e9f9d0f"
+  GIT_TAG "7617e9165e67ef68525aa9cc247dd54bd384c724"
   PREFIX ${CMAKE_CURRENT_BINARY_DIR}/third
   CMAKE_CACHE_ARGS
     -DENABLE_MAGICK:BOOL=0

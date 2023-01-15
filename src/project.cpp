@@ -96,9 +96,28 @@ void Project::removeSource(mechanizm::Source *source) {
   emit sourcesChanged(sources);
 }
 
+void Project::connectClip(mechanizm::Clip *clip) {
+  connect(this, &Project::sourcesChanged, clip,
+          &mechanizm::Clip::onSourcesChanged);
+  connect(clip, &Clip::updated, [this]() { emit this->clipsChanged(clips); });
+};
+
 void Project::loadClip(Json::Value json) {
   mechanizm::Clip *clip = new mechanizm::Clip(json);
+  connectClip(clip);
   clips.push_back(clip);
+}
+
+void Project::addClip(mechanizm::Clip *clip) {
+  clips.push_back(clip);
+  connectClip(clip);
+  emit clipsChanged(clips);
+}
+
+void Project::removeClip(mechanizm::Clip *clip) {
+  auto item = std::find(clips.begin(), clips.end(), clip);
+  clips.erase(item);
+  emit clipsChanged(clips);
 }
 
 void Project::loadSequence(Json::Value json) {

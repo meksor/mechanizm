@@ -1,9 +1,12 @@
 #include "gui/sources_window.h"
+#include "clip.h"
 #include "json.h"
 #include "project.h"
 #include "source.h"
 #include <QAction>
+#include <QDebug>
 #include <QFileDialog>
+#include <qnamespace.h>
 
 namespace mechanizm {
 
@@ -12,9 +15,10 @@ SourcesWindow::SourcesWindow(QWidget *parent, Qt::WindowFlags flags)
   this->setWindowTitle("Sources");
   createActions();
   createMenus();
-  QWidget *widget = new QWidget;
 
+  QWidget *widget = new QWidget;
   hbox = new QHBoxLayout(widget);
+
   sourceTable = new mechanizm::SourceTable();
   hbox->addWidget(sourceTable);
 
@@ -30,17 +34,24 @@ SourcesWindow::SourcesWindow(QWidget *parent, Qt::WindowFlags flags)
 }
 
 void SourcesWindow::createActions() {
-  importAct = new QAction(tr("&Import source"), this);
+  importAct = new QAction(tr("&Import New Source"), this);
   importAct->setShortcut(QKeySequence(Qt::CTRL | Qt::Key_I));
   importAct->setStatusTip(tr("Import a source file (video, midi)"));
 
-  removeAct = new QAction(tr("&Remove source"), this);
+  removeAct = new QAction(tr("&Remove Source"), this);
   removeAct->setShortcuts(QKeySequence::Delete);
   removeAct->setStatusTip(tr("Remove the selected source file"));
+
+  convertAct = new QAction(tr("&Convert Source"), this);
+  convertAct->setShortcut(QKeySequence(Qt::CTRL | Qt::Key_Return));
+  convertAct->setStatusTip(
+      tr("Convert the selected source file to it's mechanizm equivalent"));
 
   connect(importAct, &QAction::triggered, this, &SourcesWindow::importSource);
   connect(removeAct, &QAction::triggered, this,
           &SourcesWindow::removeSelectedSource);
+  connect(convertAct, &QAction::triggered, this,
+          &SourcesWindow::convertSelectedSource);
 }
 
 void SourcesWindow::createMenus() {
@@ -48,12 +59,15 @@ void SourcesWindow::createMenus() {
   sourceMenu->addAction(importAct);
   sourceMenu->addSeparator();
   sourceMenu->addAction(removeAct);
+  sourceMenu->addAction(convertAct);
 }
 
 void SourcesWindow::importSource() {
   QFileDialog dialog;
   dialog.setFileMode(QFileDialog::AnyFile);
-  dialog.setNameFilters(SourcesWindow::nameFilters);
+  // dialog.setNameFilters(SourcesWindow::nameFilters);
+  dialog.setNameFilters(getNameFilters());
+
   int result = dialog.exec();
   QString dirPath;
   if (result) {
@@ -70,19 +84,29 @@ void SourcesWindow::removeSelectedSource() {
   project->removeSource(sourceTable->getSelectedSource());
 }
 
-const QStringList getNameFilters(Source::ext_map_t extensionMap) {
+void SourcesWindow::convertSelectedSource() {
+  mechanizm::Source *source = sourceTable->getSelectedSource();
+  if (source->type == Source::Type::VIDEO) {
+    mechanizm::id_t id = mechanizm::Clip::getNextId(project->clips);
+    mechanizm::Clip *clip = new mechanizm::Clip(id, source);
+    project->addClip(clip);
+  }
+}
+
+const QStringList getNameFilters() {
   QStringList res;
-  for (auto const &[key, val] : extensionMap) {
-    std::string dpName = Source::dpNameMap.at(key);
+  auto dpNameMap = Source::getdpNameMap();
+  for (auto const &[key, val] : Source::getExtentionMap()) {
+    std::string dpName = dpNameMap.at(key);
     std::string extensions = "";
     for (auto const ext : val) {
-      extensions += " *" + ext + ",";
+      extensions += "*" + ext + " ";
     }
+    extensions.resize(extensions.size() - 1);
     std::string nameFilter = dpName + " (" + extensions + ")";
     res.append(QString(nameFilter.c_str()));
   }
   return res;
 }
-const QStringList SourcesWindow::nameFilters =
-    getNameFilters(Source::extensionMap);
+const QStringList SourcesWindow::nameFilters = getNameFilters();
 } // namespace mechanizm

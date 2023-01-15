@@ -31,12 +31,13 @@ void SourceTable::onCellChanged(int currentRow, int currentColumn,
 
 void SourceTable::onSourcesChanged(std::vector<mechanizm::Source *> s) {
   sources = s;
+  auto dpNameMap = Source::getdpNameMap();
   this->setRowCount(sources.size());
   for (int i = 0; i < sources.size(); i++) {
     mechanizm::Source *source = sources[i];
     QTableWidgetItem *nameItem =
         new QTableWidgetItem(QString(source->name.c_str()));
-    std::string typeDp = Source::dpNameMap.at(source->type);
+    std::string typeDp = dpNameMap.at(source->type);
     QTableWidgetItem *typeItem = new QTableWidgetItem(QString(typeDp.c_str()));
     QTableWidgetItem *pathItem =
         new QTableWidgetItem(QString(source->path.c_str()));

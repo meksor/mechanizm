@@ -1,5 +1,7 @@
 #pragma once
 
+#include "gui/clips_window.h"
+#include "gui/clip_editor_window.h"
 #include "gui/project_widget.h"
 #include "gui/sources_window.h"
 #include "project.h"
@@ -30,6 +32,8 @@ private:
   mechanizm::Project *project = nullptr;
   mechanizm::ProjectWidget *projectWidget;
   mechanizm::SourcesWindow *sourcesWindow;
+  mechanizm::ClipsWindow *clipsWindow;
+  mechanizm::ClipEditorWindow *clipEditorWindow;
 
   QAction *saveAct;
   QAction *newAct;

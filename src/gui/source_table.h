@@ -1,5 +1,6 @@
 #pragma once
 
+#include "json.h"
 #include "project.h"
 #include "source.h"
 #include <QTableWidget>
@@ -18,7 +19,6 @@ public:
 
 signals:
   void selectSource(mechanizm::Source *source);
-  void removeSource(mechanizm::Source *source);
 
 private:
   std::vector<mechanizm::Source *> sources;

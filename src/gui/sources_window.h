@@ -26,6 +26,7 @@ public:
 
   void importSource();
   void removeSelectedSource();
+  void convertSelectedSource();
   void onProjectChanged(mechanizm::Project *p) {
     project = p;
     connect(project, &Project::sourcesChanged, sourceTable,
@@ -40,7 +41,8 @@ private:
   QHBoxLayout *hbox;
   QAction *importAct;
   QAction *removeAct;
+  QAction *convertAct;
   QMenu *sourceMenu;
 };
-
+const QStringList getNameFilters();
 } // namespace mechanizm

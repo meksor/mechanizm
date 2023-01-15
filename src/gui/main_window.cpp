@@ -1,4 +1,5 @@
 #include "gui/main_window.h"
+#include "gui/clips_window.h"
 #include "gui/project_widget.h"
 #include "project.h"
 #include <QFileDialog>
@@ -8,18 +9,38 @@ namespace mechanizm {
 MainWindow::MainWindow(QWidget *parent, Qt::WindowFlags flags)
     : QMainWindow(parent, flags) {
   this->setWindowTitle("Project");
+
   createActions();
   createMenus();
+
   projectWidget = new mechanizm::ProjectWidget(this);
   projectWidget->hide();
+  projectWidget->addAction(saveAct);
   setCentralWidget(projectWidget);
   connect(this, &MainWindow::projectChanged, projectWidget,
           &mechanizm::ProjectWidget::onProjectChanged);
 
   sourcesWindow = new mechanizm::SourcesWindow(this);
   sourcesWindow->hide();
+  sourcesWindow->addAction(saveAct);
   connect(this, &MainWindow::projectChanged, sourcesWindow,
           &mechanizm::SourcesWindow::onProjectChanged);
+
+  clipsWindow = new mechanizm::ClipsWindow(this);
+  clipsWindow->hide();
+  clipsWindow->addAction(saveAct);
+  connect(this, &MainWindow::projectChanged, clipsWindow,
+          &mechanizm::ClipsWindow::onProjectChanged);
+
+  clipEditorWindow = new mechanizm::ClipEditorWindow(this);
+  clipEditorWindow->hide();
+  clipEditorWindow->addAction(saveAct);
+
+  connect(clipsWindow->clipTable, &ClipTable::selectClip, clipEditorWindow,
+          &ClipEditorWindow::onClipSelected);
+  // connect(this, &MainWindow::projectChanged,
+  // [clipEditorWindow](mechanizm::Porject *p) {
+  // clipEditorWindow->onClipSelected(clips); });
 
   this->setFixedSize(300, 180);
 }
@@ -54,6 +75,8 @@ void MainWindow::changeProject(mechanizm::Project *p) {
   project = p;
   projectWidget->show();
   sourcesWindow->show();
+  clipsWindow->show();
+  clipEditorWindow->show();
 
   emit projectChanged(project);
   project->emitAll();

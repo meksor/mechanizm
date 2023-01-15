@@ -1,6 +1,7 @@
 # механизм
 A rythm-based video editor. Uses `libopenshot`, `OpenCV` (soon) and `Qt5`. WIP and very buggy, beware. This is one of those 3 am hobby projects, don't judge.
 
+it also has many memory leaks rn
 ## Building
 
 Install `Qt5`, cmake takes care of the rest.

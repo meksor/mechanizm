@@ -27,7 +27,7 @@ void ProjectWidget::onProjectChanged(mechanizm::Project *p) {
   bpmEdit->setValue(p->bpm);
 
   disconnect(nameEdit, &QLineEdit::textChanged, nullptr, nullptr);
-  connect(nameEdit, &QLineEdit::textChanged, p, &mechanizm::Project::setQName);
+  connect(nameEdit, &QLineEdit::textChanged, p, &mechanizm::Project::setName);
   // weird qt fuckyness.
   disconnect(bpmEdit, qOverload<double>(&QDoubleSpinBox::valueChanged), nullptr,
              nullptr);
