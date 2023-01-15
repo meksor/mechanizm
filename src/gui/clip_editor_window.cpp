@@ -1,4 +1,5 @@
 #include "clip_editor_window.h"
+#include "clip.h"
 #include <QHeaderView>
 
 namespace mechanizm {
@@ -11,7 +12,7 @@ ClipEditorWindow::ClipEditorWindow(QWidget *parent, Qt::WindowFlags flags)
   hbox = new QHBoxLayout(widget);
 
   rpTable = new mechanizm::RythmicPointTable();
-  rpTable->setFixedWidth(200);
+  rpTable->setFixedWidth(250);
   hbox->addWidget(rpTable);
 
   player = new mechanizm::PlayerWidget();
@@ -20,6 +21,9 @@ ClipEditorWindow::ClipEditorWindow(QWidget *parent, Qt::WindowFlags flags)
 
   hbox->addWidget(player);
   createMenus();
+
+  connect(rpTable, &mechanizm::RythmicPointTable::selectRythmicPoint, player,
+          &mechanizm::PlayerWidget::onRythmicPointSelected);
 
   setCentralWidget(widget);
 }
@@ -42,6 +46,7 @@ void ClipEditorWindow::createActions() {
 void ClipEditorWindow::createMenus() {
   rpMenu = this->menuBar()->addMenu(tr("&Rythmic Points"));
   rpMenu->addAction(removeAct);
+  rpMenu->addAction(addAct);
   playerMenu = this->menuBar()->addMenu(tr("&Player"));
   playerMenu->addAction(player->iSpdAct);
   playerMenu->addAction(player->dSpdAct);
@@ -52,14 +57,20 @@ void ClipEditorWindow::createMenus() {
   playerMenu->addAction(player->dFrmAct);
 }
 void ClipEditorWindow::onClipSelected(mechanizm::Clip *c) {
-  player->setFilePath(c->source->path);
-  rpTable->onClipUpdated(c);
+  clip = c;
+  player->setClip(clip);
+  rpTable->onClipUpdated(clip);
 }
-void ClipEditorWindow::removeSelectedRythmicPoint(){
-
+void ClipEditorWindow::removeSelectedRythmicPoint() {
+  mechanizm::RythmicPoint rp = rpTable->getSelectedRythmicPoint();
+  clip->removeRythmicPoint(rp);
+  rpTable->onClipUpdated(clip);
 };
-void ClipEditorWindow::addRythmicPoint(){
-
+void ClipEditorWindow::addRythmicPoint() {
+  mechanizm::id_t id = mechanizm::RythmicPoint::getNextId(clip->rythmicPoints);
+  mechanizm::RythmicPoint rp(id, player->player->Position());
+  clip->addRythmicPoint(rp);
+  rpTable->onClipUpdated(clip);
 };
 
 } // namespace mechanizm

@@ -5,6 +5,7 @@
 #include <ReaderBase.h>
 #include <memory>
 
+#include "clip.h"
 #include <QAction>
 #include <QCloseEvent>
 #include <QKeyEvent>
@@ -29,7 +30,9 @@ public:
   QAction *tpAct;
   QAction *tsAct;
 
-  void setFilePath(std::string path);
+  void setClip(mechanizm::Clip *);
+  void onRythmicPointSelected(mechanizm::RythmicPoint);
+
   void increaseSpeed();
   void decreaseSpeed();
   void increaseFrame();

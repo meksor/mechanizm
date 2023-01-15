@@ -10,6 +10,8 @@ namespace mechanizm {
 class RythmicPoint : public mechanizm::JsonSerializable {
 public:
   RythmicPoint(const Json::Value root) { SetJsonValue(root); };
+  RythmicPoint(mechanizm::id_t id, int frame) : id(id), frame(frame){};
+  static const mechanizm::id_t getNextId(std::vector<RythmicPoint> items);
 
   double getSeconds(openshot::ReaderInfo info) {
     return frame / info.fps.ToDouble();
@@ -41,9 +43,11 @@ public:
     name = n.toStdString();
     emit updated();
   };
-
+  long getFirstFrame();
   // std::vector<mechanizm::RythmicPoint> eclipsedRythmicPoints();
   void loadRythmicPoint(Json::Value json);
+  void removeRythmicPoint(mechanizm::RythmicPoint json);
+  void addRythmicPoint(mechanizm::RythmicPoint json);
   void onSourcesChanged(std::vector<mechanizm::Source *>);
 
   mechanizm::id_t id;

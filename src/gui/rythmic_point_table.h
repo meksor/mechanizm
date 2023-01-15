@@ -15,10 +15,10 @@ public:
   void onClipUpdated(mechanizm::Clip *clip);
   void onCellChanged(int currentRow, int currentColumn, int previousRow,
                      int previousColumn);
-  mechanizm::RythmicPoint *getSelectedRythmicPoint();
+  mechanizm::RythmicPoint getSelectedRythmicPoint();
 
 signals:
-  void selectRythmicPoint(mechanizm::RythmicPoint *rythmicPoint);
+  void selectRythmicPoint(mechanizm::RythmicPoint rythmicPoint);
 
 private:
   std::vector<mechanizm::RythmicPoint> rythmicPoints;

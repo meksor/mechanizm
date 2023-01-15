@@ -40,5 +40,6 @@ private:
   mechanizm::RythmicPointTable *rpTable;
   mechanizm::PlayerWidget *player;
   mechanizm::Project *project;
+  mechanizm::Clip *clip;
 };
 } // namespace mechanizm

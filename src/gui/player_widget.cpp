@@ -50,17 +50,17 @@ void PlayerWidget::createActions() {
 }
 
 void PlayerWidget::increaseSpeed() {
-  if (player->Mode() == openshot::PLAYBACK_LOADING)
-    return;
   playerSpeed += 1.;
   player->Speed(playerSpeed);
+  if (player->Mode() != openshot::PLAYBACK_PLAY)
+    player->Play();
 }
 
 void PlayerWidget::decreaseSpeed() {
-  if (player->Mode() == openshot::PLAYBACK_LOADING)
-    return;
   playerSpeed -= 1.;
   player->Speed(playerSpeed);
+  if (player->Mode() != openshot::PLAYBACK_PLAY)
+    player->Play();
 }
 
 void PlayerWidget::increaseFrame() {
@@ -88,20 +88,25 @@ void PlayerWidget::toggleStop() {
   if (player->Mode() == openshot::PLAYBACK_PLAY) {
     player->Pause();
   } else {
-    playerSpeed = 1.;
-    player->Speed(playerSpeed);
     player->Play();
   }
 }
 
-void PlayerWidget::setFilePath(std::string path) {
-  player->SetSource(path);
+void PlayerWidget::setClip(mechanizm::Clip *clip) {
+  player->Stop();
+  player->SetSource(clip->source->path);
 
   // this->setFixedSize(r->info.width, r->info.height);
   // renderWidget->setFixedSize(r->info.width, r->info.height);
-
-  player->Seek(0);
   player->Play();
+  player->Seek(clip->getFirstFrame());
+  playerSpeed = 1.;
+  player->Speed(playerSpeed);
+  player->Pause();
 }
+
+void PlayerWidget::onRythmicPointSelected(mechanizm::RythmicPoint rp) {
+  player->Seek(rp.frame);
+};
 
 } // namespace mechanizm

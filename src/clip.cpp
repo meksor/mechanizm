@@ -3,6 +3,16 @@
 
 namespace mechanizm {
 
+const mechanizm::id_t RythmicPoint::getNextId(std::vector<RythmicPoint> items) {
+  if (items.size() == 0)
+    return 0;
+  std::vector<mechanizm::id_t> ids(items.size());
+  std::transform(items.cbegin(), items.cend(), ids.begin(),
+                 [](RythmicPoint i) { return i.id; });
+  auto maxId = std::max_element(ids.begin(), ids.end());
+  return (*maxId) + 1;
+}
+
 Json::Value RythmicPoint::JsonValue() const {
   Json::Value root;
   root["id"] = id;
@@ -23,6 +33,15 @@ const mechanizm::id_t Clip::getNextId(std::vector<Clip *> items) {
                  [](Clip *i) { return i->id; });
   auto maxId = std::max_element(ids.begin(), ids.end());
   return (*maxId) + 1;
+}
+long Clip::getFirstFrame() {
+  if (rythmicPoints.size() == 0)
+    return 0;
+  std::vector<long> ids(rythmicPoints.size());
+  std::transform(rythmicPoints.cbegin(), rythmicPoints.cend(), ids.begin(),
+                 [](RythmicPoint i) { return i.frame; });
+  auto minFrame = std::min_element(ids.begin(), ids.end());
+  return *minFrame;
 }
 
 Clip::Clip(mechanizm::id_t i, mechanizm::Source *s) : id(i), source(s) {
@@ -63,6 +82,25 @@ void Clip::SetJsonValue(const Json::Value root) {
 void Clip::loadRythmicPoint(Json::Value json) {
   mechanizm::RythmicPoint rp = mechanizm::RythmicPoint(json);
   rythmicPoints.push_back(rp);
+}
+
+void Clip::addRythmicPoint(mechanizm::RythmicPoint rp) {
+  rythmicPoints.push_back(rp);
+  auto compare_frame = [rp](mechanizm::RythmicPoint a,
+                            mechanizm::RythmicPoint b) {
+    return a.frame < b.frame;
+  };
+  std::sort(rythmicPoints.begin(), rythmicPoints.end(), compare_frame);
+
+  emit updated();
+}
+
+void Clip::removeRythmicPoint(mechanizm::RythmicPoint rp) {
+  auto id_matches = [rp](mechanizm::RythmicPoint i) { return i.id == rp.id; };
+  auto item =
+      std::find_if(rythmicPoints.begin(), rythmicPoints.end(), id_matches);
+  rythmicPoints.erase(item);
+  emit updated();
 }
 
 void Clip::onSourcesChanged(std::vector<mechanizm::Source *> sources) {
