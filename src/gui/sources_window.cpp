@@ -2,6 +2,7 @@
 #include "clip.h"
 #include "json.h"
 #include "project.h"
+#include "sequence.h"
 #include "source.h"
 #include <QAction>
 #include <QDebug>
@@ -90,6 +91,10 @@ void SourcesWindow::convertSelectedSource() {
     mechanizm::id_t id = mechanizm::Clip::getNextId(project->clips);
     mechanizm::Clip *clip = new mechanizm::Clip(id, source);
     project->addClip(clip);
+  } else if (source->type == Source::Type::MIDI) {
+    mechanizm::id_t id = mechanizm::Sequence::getNextId(project->sequences);
+    mechanizm::Sequence *sequence = new mechanizm::Sequence(id, source);
+    project->addSequence(sequence);
   }
 }
 

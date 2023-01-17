@@ -34,6 +34,7 @@ const mechanizm::id_t Clip::getNextId(std::vector<Clip *> items) {
   auto maxId = std::max_element(ids.begin(), ids.end());
   return (*maxId) + 1;
 }
+
 long Clip::getFirstFrame() {
   if (rythmicPoints.size() == 0)
     return 0;

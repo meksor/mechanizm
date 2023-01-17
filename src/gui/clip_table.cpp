@@ -24,7 +24,7 @@ mechanizm::Clip *ClipTable::getSelectedClip() {
 
 void ClipTable::onCellChanged(int currentRow, int currentColumn,
                               int previousRow, int previousColumn) {
-  if (currentRow != previousRow) {
+  if (currentRow != previousRow && !clips.empty()) {
     emit selectClip(clips[currentRow]);
   }
 }

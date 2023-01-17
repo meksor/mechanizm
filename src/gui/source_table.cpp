@@ -24,7 +24,7 @@ mechanizm::Source *SourceTable::getSelectedSource() {
 
 void SourceTable::onCellChanged(int currentRow, int currentColumn,
                                 int previousRow, int previousColumn) {
-  if (currentRow != previousRow) {
+  if (currentRow != previousRow && !sources.empty()) {
     emit selectSource(sources[currentRow]);
   }
 }

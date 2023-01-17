@@ -1,8 +1,9 @@
 #pragma once
 
-#include "gui/clips_window.h"
 #include "gui/clip_editor_window.h"
+#include "gui/clips_window.h"
 #include "gui/project_widget.h"
+#include "gui/sequences_window.h"
 #include "gui/sources_window.h"
 #include "project.h"
 #include <QLabel>
@@ -34,6 +35,7 @@ private:
   mechanizm::SourcesWindow *sourcesWindow;
   mechanizm::ClipsWindow *clipsWindow;
   mechanizm::ClipEditorWindow *clipEditorWindow;
+  mechanizm::SequencesWindow *sequencesWindow;
 
   QAction *saveAct;
   QAction *newAct;

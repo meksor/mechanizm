@@ -120,11 +120,27 @@ void Project::removeClip(mechanizm::Clip *clip) {
   emit clipsChanged(clips);
 }
 
+void Project::connectSequence(mechanizm::Sequence *seq) {
+  connect(this, &Project::sourcesChanged, seq,
+          &mechanizm::Sequence::onSourcesChanged);
+  connect(seq, &Sequence::updated,
+          [this]() { emit this->sequencesChanged(sequences); });
+};
 void Project::loadSequence(Json::Value json) {
   mechanizm::Sequence *sequence = new mechanizm::Sequence(json);
   sequences.push_back(sequence);
 }
 
+void Project::addSequence(mechanizm::Sequence *seq) {
+  sequences.push_back(seq);
+  emit sequencesChanged(sequences);
+}
+
+void Project::removeSequence(mechanizm::Sequence *seq) {
+  auto item = std::find(sequences.begin(), sequences.end(), seq);
+  sequences.erase(item);
+  emit sequencesChanged(sequences);
+}
 void Project::loadMapping(Json::Value json) {
   mechanizm::Mapping *mapping = new mechanizm::Mapping(json);
   mappings.push_back(mapping);

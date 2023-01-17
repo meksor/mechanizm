@@ -39,7 +39,11 @@ public:
   void addClip(mechanizm::Clip *);
   void removeClip(mechanizm::Clip *);
 
+  void connectSequence(mechanizm::Sequence *);
   void loadSequence(Json::Value);
+  void addSequence(mechanizm::Sequence *);
+  void removeSequence(mechanizm::Sequence *);
+
   void loadMapping(Json::Value);
   void setDefaults();
 
