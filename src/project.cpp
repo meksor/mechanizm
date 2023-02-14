@@ -93,6 +93,7 @@ void Project::addSource(mechanizm::Source *source) {
 void Project::removeSource(mechanizm::Source *source) {
   auto item = std::find(sources.begin(), sources.end(), source);
   sources.erase(item);
+  // TODO: prevent or delete clips/seqs
   emit sourcesChanged(sources);
 }
 
@@ -117,6 +118,7 @@ void Project::addClip(mechanizm::Clip *clip) {
 void Project::removeClip(mechanizm::Clip *clip) {
   auto item = std::find(clips.begin(), clips.end(), clip);
   clips.erase(item);
+  // TODO: prevent or delete mapping
   emit clipsChanged(clips);
 }
 
@@ -124,21 +126,24 @@ void Project::connectSequence(mechanizm::Sequence *seq) {
   connect(this, &Project::sourcesChanged, seq,
           &mechanizm::Sequence::onSourcesChanged);
   connect(seq, &Sequence::updated,
-          [this]() { emit this->sequencesChanged(sequences); });
+          [this]() { emit this->sequencesChanged(this->sequences); });
 };
 void Project::loadSequence(Json::Value json) {
   mechanizm::Sequence *sequence = new mechanizm::Sequence(json);
+  connectSequence(sequence);
   sequences.push_back(sequence);
 }
 
-void Project::addSequence(mechanizm::Sequence *seq) {
-  sequences.push_back(seq);
+void Project::addSequence(mechanizm::Sequence *sequence) {
+  sequences.push_back(sequence);
+  connectSequence(sequence);
   emit sequencesChanged(sequences);
 }
 
 void Project::removeSequence(mechanizm::Sequence *seq) {
   auto item = std::find(sequences.begin(), sequences.end(), seq);
   sequences.erase(item);
+  // TODO: prevent or delete mapping
   emit sequencesChanged(sequences);
 }
 void Project::loadMapping(Json::Value json) {

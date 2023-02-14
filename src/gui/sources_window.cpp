@@ -92,9 +92,13 @@ void SourcesWindow::convertSelectedSource() {
     mechanizm::Clip *clip = new mechanizm::Clip(id, source);
     project->addClip(clip);
   } else if (source->type == Source::Type::MIDI) {
-    mechanizm::id_t id = mechanizm::Sequence::getNextId(project->sequences);
-    mechanizm::Sequence *sequence = new mechanizm::Sequence(id, source);
-    project->addSequence(sequence);
+    cxxmidi::File file(source->path.c_str());
+    for (int i = 0; i < file.Tracks(); i++) {
+      mechanizm::id_t id = mechanizm::Sequence::getNextId(project->sequences);
+      mechanizm::Sequence *sequence =
+          new mechanizm::Sequence(id, source, file, i);
+      project->addSequence(sequence);
+    }
   }
 }
 

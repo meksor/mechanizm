@@ -50,13 +50,13 @@ const mechanizm::id_t Sequence::getNextId(std::vector<Sequence *> items) {
   return (*maxId) + 1;
 }
 
-Sequence::Sequence(mechanizm::id_t id, mechanizm::Source *source)
-    : id(id), source(source), sourceId(source->id), name(source->name) {
+Sequence::Sequence(mechanizm::id_t id, mechanizm::Source *source,
+                   cxxmidi::File file, int trackIndex)
+    : id(id), source(source), sourceId(source->id) {
   // TODO: static -> configurable in modal
-  static int trackIndex = 0;
 
-  cxxmidi::File file(source->path.c_str());
   cxxmidi::Track track = file[trackIndex];
+  name = source->name + " " + track.GetName();
 
   int stepId = 0;
   long currentT = 0;
@@ -65,7 +65,7 @@ Sequence::Sequence(mechanizm::id_t id, mechanizm::Source *source)
     if (ev[0] == MIDI_NOTE_ON) {
       TimeStep step(stepId, double(currentT) / file.TimeDivision());
       this->timeSteps.push_back(step);
-      id++;
+      stepId++;
     }
   }
 };

@@ -1,6 +1,7 @@
 #pragma once
 #include "json.h"
 #include "source.h"
+#include <cxxmidi/file.hpp>
 #include <string>
 
 namespace mechanizm {
@@ -26,10 +27,16 @@ public:
   static const mechanizm::id_t getNextId(std::vector<Sequence *>);
 
   Sequence(const Json::Value root) { SetJsonValue(root); };
-  Sequence(mechanizm::id_t, mechanizm::Source *);
+  Sequence(mechanizm::id_t, mechanizm::Source *, cxxmidi::File file,
+           int trackIndex);
 
   Json::Value JsonValue() const override;
   void SetJsonValue(const Json::Value root) override;
+
+  void setName(QString n) {
+    name = n.toStdString();
+    emit updated();
+  };
 
   void loadTimeStep(Json::Value json);
   void onSourcesChanged(std::vector<mechanizm::Source *>);
