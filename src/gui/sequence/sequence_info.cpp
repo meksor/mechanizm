@@ -1,4 +1,4 @@
-#include "gui/sequence_info.h"
+#include "gui/sequence/sequence_info.h"
 #include "sequence.h"
 #include <QLineEdit>
 

@@ -1,4 +1,4 @@
-#include "gui/mapping_info.h"
+#include "gui/mapping/mapping_info.h"
 #include <QLineEdit>
 
 namespace mechanizm {

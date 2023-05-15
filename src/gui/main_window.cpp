@@ -1,5 +1,5 @@
 #include "gui/main_window.h"
-#include "gui/clips_window.h"
+#include "gui/clip/clips_window.h"
 #include "gui/project_widget.h"
 #include "project.h"
 #include <QFileDialog>

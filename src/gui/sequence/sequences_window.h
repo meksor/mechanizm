@@ -1,7 +1,7 @@
 #pragma once
 
-#include "gui/sequence_info.h"
-#include "gui/sequence_table.h"
+#include "gui/sequence/sequence_info.h"
+#include "gui/sequence/sequence_table.h"
 #include "project.h"
 #include "sequence.h"
 #include <QHBoxLayout>

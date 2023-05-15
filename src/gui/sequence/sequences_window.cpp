@@ -1,4 +1,4 @@
-#include "gui/sequences_window.h"
+#include "gui/sequence/sequences_window.h"
 #include "clip.h"
 #include "json.h"
 #include "project.h"

@@ -8,7 +8,7 @@
 #include <QWidget>
 
 #include "clip.h"
-#include "player_widget.h"
+#include "gui/player_widget.h"
 #include "rythmic_point_table.h"
 
 namespace mechanizm {

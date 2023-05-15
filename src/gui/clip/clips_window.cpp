@@ -1,7 +1,7 @@
-#include "gui/clips_window.h"
 #include "clip.h"
-#include "gui/clip_info.h"
-#include "gui/clip_table.h"
+#include "gui/clip/clips_window.h"
+#include "gui/clip/clip_info.h"
+#include "gui/clip/clip_table.h"
 #include "json.h"
 #include "project.h"
 #include <QAction>

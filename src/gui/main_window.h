@@ -1,11 +1,11 @@
 #pragma once
 
-#include "gui/clip_editor_window.h"
-#include "gui/clips_window.h"
+#include "gui/clip/clip_editor_window.h"
+#include "gui/clip/clips_window.h"
 #include "gui/project_widget.h"
-#include "gui/sequences_window.h"
-#include "gui/sources_window.h"
-#include "gui/mappings_window.h"
+#include "gui/sequence/sequences_window.h"
+#include "gui/source/sources_window.h"
+#include "gui/mapping/mappings_window.h"
 #include "project.h"
 #include <QLabel>
 #include <QMainWindow>

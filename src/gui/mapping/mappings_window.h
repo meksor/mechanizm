@@ -1,7 +1,7 @@
 #pragma once
 
-#include "gui/mapping_info.h"
-#include "gui/mapping_table.h"
+#include "gui/mapping/mapping_info.h"
+#include "gui/mapping/mapping_table.h"
 #include "project.h"
 #include "mapping.h"
 #include <QHBoxLayout>

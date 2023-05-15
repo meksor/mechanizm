@@ -1,4 +1,4 @@
-#include "gui/sources_window.h"
+#include "gui/source/sources_window.h"
 #include "clip.h"
 #include "json.h"
 #include "project.h"

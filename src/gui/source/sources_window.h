@@ -1,7 +1,7 @@
 #pragma once
 
-#include "gui/source_info.h"
-#include "gui/source_table.h"
+#include "gui/source/source_info.h"
+#include "gui/source/source_table.h"
 #include "project.h"
 #include "source.h"
 #include <QHBoxLayout>

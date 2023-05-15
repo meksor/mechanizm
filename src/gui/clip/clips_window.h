@@ -1,7 +1,7 @@
 #pragma once
 
-#include "gui/clip_info.h"
-#include "gui/clip_table.h"
+#include "gui/clip/clip_info.h"
+#include "gui/clip/clip_table.h"
 #include "project.h"
 #include "source.h"
 #include <QHBoxLayout>

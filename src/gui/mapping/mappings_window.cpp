@@ -1,4 +1,4 @@
-#include "gui/mappings_window.h"
+#include "gui/mapping/mappings_window.h"
 #include "clip.h"
 #include "json.h"
 #include "project.h"

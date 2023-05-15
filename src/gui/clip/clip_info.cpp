@@ -1,4 +1,4 @@
-#include "gui/clip_info.h"
+#include "gui/clip/clip_info.h"
 #include "clip.h"
 #include <QLineEdit>
 

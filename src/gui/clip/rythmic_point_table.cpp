@@ -1,4 +1,4 @@
-#include "gui/rythmic_point_table.h"
+#include "gui/clip/rythmic_point_table.h"
 #include "clip.h"
 #include <QHeaderView>
 #include <QString>
