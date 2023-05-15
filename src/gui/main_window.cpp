@@ -43,6 +43,12 @@ MainWindow::MainWindow(QWidget *parent, Qt::WindowFlags flags)
   sequencesWindow->addAction(saveAct);
   connect(this, &MainWindow::projectChanged, sequencesWindow,
           &mechanizm::SequencesWindow::onProjectChanged);
+
+  mappingsWindow = new mechanizm::MappingsWindow(this);
+  mappingsWindow->hide();
+  mappingsWindow->addAction(saveAct);
+  connect(this, &MainWindow::projectChanged, mappingsWindow,
+          &mechanizm::MappingsWindow::onProjectChanged);
   // connect(this, &MainWindow::projectChanged,
   // [clipEditorWindow](mechanizm::Porject *p) {
   // clipEditorWindow->onClipSelected(clips); });
@@ -83,6 +89,7 @@ void MainWindow::changeProject(mechanizm::Project *p) {
   clipsWindow->show();
   clipEditorWindow->show();
   sequencesWindow->show();
+  mappingsWindow->show();
 
   emit projectChanged(project);
   project->emitAll();

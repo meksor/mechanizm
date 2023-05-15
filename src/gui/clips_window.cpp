@@ -39,15 +39,33 @@ void ClipsWindow::createActions() {
 
   connect(removeAct, &QAction::triggered, this,
           &ClipsWindow::removeSelectedClip);
-}
 
+  mapAct = new QAction(tr("&Map Clip"), this);
+  mapAct->setShortcut(QKeySequence(Qt::CTRL | Qt::Key_M));
+  mapAct->setStatusTip(tr("Map the selected clip"));
+
+  connect(mapAct, &QAction::triggered, this,
+          &ClipsWindow::mapSelectedClip);
+
+}
+ 
 void ClipsWindow::createMenus() {
   clipMenu = this->menuBar()->addMenu(tr("&Clip"));
   clipMenu->addAction(removeAct);
+  clipMenu->addAction(mapAct);
 }
 
 void ClipsWindow::removeSelectedClip() {
   project->removeClip(clipTable->getSelectedClip());
+}
+
+void ClipsWindow::mapSelectedClip() {
+  mechanizm::id_t id = mechanizm::Mapping::getNextId(project->mappings);
+  mechanizm::Clip *clip = clipTable->getSelectedClip(); 
+  mechanizm::Mapping *mapping =
+        new mechanizm::Mapping(id, clip->name, clip);
+      
+  project->addMapping(mapping);
 }
 
 } // namespace mechanizm

@@ -20,5 +20,5 @@ $ make -j4
 ## Using
 
 ```bash
-$ ./mechanizm
+$ ./src/mechanizm
 ```

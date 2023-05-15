@@ -23,6 +23,7 @@ public:
   void createActions();
 
   void removeSelectedClip();
+  void mapSelectedClip();
   void onProjectChanged(mechanizm::Project *p) {
     project = p;
     connect(project, &Project::clipsChanged, clipTable,
@@ -36,6 +37,7 @@ public:
 private:
   QHBoxLayout *hbox;
   QAction *removeAct;
+  QAction *mapAct;
   QMenu *clipMenu;
 };
 } // namespace mechanizm

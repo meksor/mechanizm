@@ -7,6 +7,16 @@
 
 namespace mechanizm {
 
+const mechanizm::id_t Mapping::getNextId(std::vector<Mapping*> items) {
+  if (items.size() == 0)
+    return 0;
+  std::vector<mechanizm::id_t> ids(items.size());
+  std::transform(items.cbegin(), items.cend(), ids.begin(),
+                 [](Mapping *i) { return i->id; });
+  auto maxId = std::max_element(ids.begin(), ids.end());
+  return (*maxId) + 1;
+}
+
 Json::Value Mapping::JsonValue() const {
   Json::Value root;
   root["id"] = id;

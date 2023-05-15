@@ -30,6 +30,8 @@ public:
   void setName(QString n) { name = n.toStdString(); };
   QString getPath() const { return this->rootDir.absolutePath(); };
 
+
+  // TODO: free mem on remove*
   void loadSource(Json::Value);
   void addSource(mechanizm::Source *);
   void removeSource(mechanizm::Source *);
@@ -44,7 +46,11 @@ public:
   void addSequence(mechanizm::Sequence *);
   void removeSequence(mechanizm::Sequence *);
 
+  void connectMapping(mechanizm::Mapping *);
   void loadMapping(Json::Value);
+  void addMapping(mechanizm::Mapping *);
+  void removeMapping(mechanizm::Mapping *);
+
   void setDefaults();
 
   void emitAll() {

@@ -43,7 +43,11 @@ private:
 class Mapping : public QObject, public mechanizm::JsonSerializable {
   Q_OBJECT
 public:
+  static const mechanizm::id_t getNextId(std::vector<Mapping *>);
+
   Mapping(const Json::Value root) { SetJsonValue(root); };
+  Mapping(mechanizm::id_t i, std::string n, mechanizm::Clip *c) 
+    : id(i), name(n), clip(c), clipId(c->id) {};
 
   Json::Value JsonValue() const override;
   void SetJsonValue(const Json::Value root) override;
@@ -52,16 +56,23 @@ public:
   void onSequencesChanged(std::vector<mechanizm::Sequence *>);
   void onClipsChanged(std::vector<mechanizm::Clip *>);
 
-signals:
+  void setName(QString n) {
+    name = n.toStdString();
+    emit updated();
+  };
 
-protected:
-private:
   mechanizm::id_t id;
   std::string name;
 
   mechanizm::id_t clipId;
   mechanizm::Clip *clip = nullptr;
   std::vector<mechanizm::Channel> channels;
+
+signals:
+  void updated();
+
+protected:
+private:
 };
 
 } // namespace mechanizm

@@ -146,9 +146,31 @@ void Project::removeSequence(mechanizm::Sequence *seq) {
   // TODO: prevent or delete mapping
   emit sequencesChanged(sequences);
 }
+
+void Project::connectMapping(mechanizm::Mapping *m) {
+  connect(this, &Project::sequencesChanged, m,
+          &mechanizm::Mapping::onSequencesChanged);
+  connect(this, &Project::clipsChanged, m,
+          &mechanizm::Mapping::onClipsChanged);
+  connect(m, &Mapping::updated,
+          [this]() { emit this->mappingsChanged(this->mappings); });
+}
+
 void Project::loadMapping(Json::Value json) {
   mechanizm::Mapping *mapping = new mechanizm::Mapping(json);
   mappings.push_back(mapping);
+}
+
+void Project::addMapping(mechanizm::Mapping *mapping) {
+  mappings.push_back(mapping);
+  connectMapping(mapping);
+  emit mappingsChanged(mappings);
+}
+
+void Project::removeMapping(mechanizm::Mapping *mapping) {
+  auto item = std::find(mappings.begin(), mappings.end(), mapping);
+  mappings.erase(item);
+  emit mappingsChanged(mappings);
 }
 
 } // namespace mechanizm
