@@ -55,6 +55,8 @@ MainWindow::MainWindow(QWidget *parent, Qt::WindowFlags flags)
   connect(mappingsWindow->mappingTable, &mechanizm::MappingTable::selectMapping,
           mappingEditorWindow,
           &mechanizm::MappingEditorWindow::onMappingSelected);
+  connect(this, &MainWindow::projectChanged, mappingEditorWindow,
+          &mechanizm::MappingEditorWindow::onProjectChanged);
 
   this->setFixedSize(300, 180);
 }
