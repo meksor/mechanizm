@@ -28,9 +28,9 @@ public:
     connect(project, &Project::sequencesChanged, sequenceTable,
             &mechanizm::SequenceTable::onSequencesChanged);
   };
+  mechanizm::SequenceTable *sequenceTable;
 
 private:
-  mechanizm::SequenceTable *sequenceTable;
   mechanizm::SequenceInfo *sequenceInfo;
   mechanizm::Project *project;
 

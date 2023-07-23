@@ -2,8 +2,8 @@
 
 #include "gui/mapping/mapping_info.h"
 #include "gui/mapping/mapping_table.h"
-#include "project.h"
 #include "mapping.h"
+#include "project.h"
 #include <QHBoxLayout>
 #include <QLabel>
 #include <QMainWindow>
@@ -16,7 +16,7 @@ class MappingsWindow : public QMainWindow {
   Q_OBJECT
 public:
   MappingsWindow(QWidget *parent = nullptr,
-                  Qt::WindowFlags flags = Qt::WindowFlags());
+                 Qt::WindowFlags flags = Qt::WindowFlags());
 
   void createMenus();
   void createActions();
@@ -29,8 +29,9 @@ public:
             &mechanizm::MappingTable::onMappingsChanged);
   };
 
-private:
   mechanizm::MappingTable *mappingTable;
+
+private:
   mechanizm::MappingInfo *mappingInfo;
   mechanizm::Project *project;
 
