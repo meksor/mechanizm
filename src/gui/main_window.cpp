@@ -1,7 +1,5 @@
 #include "gui/main_window.h"
-#include "gui/clip/clips_window.h"
-#include "gui/project_widget.h"
-#include "project.h"
+#include "gui/mapping/mapping_table.h"
 #include <QFileDialog>
 
 namespace mechanizm {
@@ -49,9 +47,14 @@ MainWindow::MainWindow(QWidget *parent, Qt::WindowFlags flags)
   mappingsWindow->addAction(saveAct);
   connect(this, &MainWindow::projectChanged, mappingsWindow,
           &mechanizm::MappingsWindow::onProjectChanged);
-  // connect(this, &MainWindow::projectChanged,
-  // [clipEditorWindow](mechanizm::Porject *p) {
-  // clipEditorWindow->onClipSelected(clips); });
+
+  mappingEditorWindow = new mechanizm::MappingEditorWindow(this);
+  connect(sequencesWindow->sequenceTable,
+          &mechanizm::SequenceTable::selectSequence, mappingEditorWindow,
+          &mechanizm::MappingEditorWindow::onSequenceSelected);
+  connect(mappingsWindow->mappingTable, &mechanizm::MappingTable::selectMapping,
+          mappingEditorWindow,
+          &mechanizm::MappingEditorWindow::onMappingSelected);
 
   this->setFixedSize(300, 180);
 }
@@ -90,6 +93,7 @@ void MainWindow::changeProject(mechanizm::Project *p) {
   clipEditorWindow->show();
   sequencesWindow->show();
   mappingsWindow->show();
+  mappingEditorWindow->show();
 
   emit projectChanged(project);
   project->emitAll();

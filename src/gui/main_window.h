@@ -6,6 +6,7 @@
 #include "gui/sequence/sequences_window.h"
 #include "gui/source/sources_window.h"
 #include "gui/mapping/mappings_window.h"
+#include "gui/mapping/mapping_editor_window.h"
 #include "project.h"
 #include <QLabel>
 #include <QMainWindow>
@@ -38,6 +39,7 @@ private:
   mechanizm::ClipEditorWindow *clipEditorWindow;
   mechanizm::SequencesWindow *sequencesWindow;
   mechanizm::MappingsWindow *mappingsWindow;
+  mechanizm::MappingEditorWindow *mappingEditorWindow;
 
   QAction *saveAct;
   QAction *newAct;
