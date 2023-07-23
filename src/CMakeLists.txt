@@ -28,6 +28,7 @@ add_executable(
 
 
     mapping.cpp
+    compositor.cpp
     clip.cpp
     source.cpp
     sequence.cpp
