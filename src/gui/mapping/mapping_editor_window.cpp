@@ -28,6 +28,10 @@ MappingEditorWindow::MappingEditorWindow(QWidget *parent, Qt::WindowFlags flags)
 }
 
 void MappingEditorWindow::createActions() {
+  previewAct = new QAction(tr("&Render Preview"), this);
+  previewAct->setShortcut(Qt::Key_R);
+  previewAct->setStatusTip(tr("Render a preview for this mapping"));
+
   removeAct = new QAction(tr("&Remove Channel"), this);
   removeAct->setShortcuts(QKeySequence::Delete);
   removeAct->setStatusTip(tr("Remove the selected channel"));
@@ -36,6 +40,8 @@ void MappingEditorWindow::createActions() {
   addAct->setShortcut(Qt::Key_C);
   addAct->setStatusTip(tr("Add a new channel"));
 
+  connect(previewAct, &QAction::triggered, this,
+          &MappingEditorWindow::renderPreview);
   connect(removeAct, &QAction::triggered, this,
           &MappingEditorWindow::removeSelectedChannel);
   connect(addAct, &QAction::triggered, this, &MappingEditorWindow::addChannel);
@@ -45,6 +51,9 @@ void MappingEditorWindow::createMenus() {
   chMenu = this->menuBar()->addMenu(tr("&Channels"));
   chMenu->addAction(removeAct);
   chMenu->addAction(addAct);
+  compMenu = this->menuBar()->addMenu(tr("&Compositor"));
+  compMenu->addAction(previewAct);
+
   playerMenu = this->menuBar()->addMenu(tr("&Player"));
   playerMenu->addAction(player->iSpdAct);
   playerMenu->addAction(player->dSpdAct);
@@ -75,4 +84,9 @@ void MappingEditorWindow::onMappingSelected(mechanizm::Mapping *m) {
   chTable->onMappingUpdated(mapping);
   // channelInfo->onChannelSelected(clip);
 }
+
+void MappingEditorWindow::renderPreview() {
+  this->project->compositor.compose(mapping);
+}
+
 } // namespace mechanizm
