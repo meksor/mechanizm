@@ -7,7 +7,17 @@
 
 namespace mechanizm {
 
-const mechanizm::id_t Mapping::getNextId(std::vector<Mapping*> items) {
+const mechanizm::id_t Channel::getNextId(std::vector<Channel> items) {
+  if (items.size() == 0)
+    return 0;
+  std::vector<mechanizm::id_t> ids(items.size());
+  std::transform(items.cbegin(), items.cend(), ids.begin(),
+                 [](Channel i) { return i.id; });
+  auto maxId = std::max_element(ids.begin(), ids.end());
+  return (*maxId) + 1;
+}
+
+const mechanizm::id_t Mapping::getNextId(std::vector<Mapping *> items) {
   if (items.size() == 0)
     return 0;
   std::vector<mechanizm::id_t> ids(items.size());
@@ -43,6 +53,15 @@ void Mapping::SetJsonValue(const Json::Value root) {
 void Mapping::loadChannel(Json::Value json) {
   mechanizm::Channel c(json);
   channels.push_back(c);
+}
+
+void Mapping::addChannel(mechanizm::Channel channel) {
+  channels.push_back(channel);
+}
+
+void Mapping::removeChannel(mechanizm::Channel channel) {
+  auto item = std::find(channels.begin(), channels.end(), channel);
+  channels.erase(item);
 }
 
 void Mapping::onSequencesChanged(std::vector<mechanizm::Sequence *> sequences) {

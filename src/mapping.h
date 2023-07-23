@@ -9,32 +9,43 @@ namespace mechanizm {
 
 class Channel : public mechanizm::JsonSerializable {
 public:
-  enum Effect : int { INC = 0, DEC = 1, SEEK = 2, SET = 3 };
+  enum Effect : int { INC = 0, DEC = 1, SET = 2 };
+  enum Interpolation : int { NONE = 0, LINEAR = 1 };
+  const mechanizm::id_t getNextId(std::vector<Channel> items);
 
   Channel(const Json::Value root) { SetJsonValue(root); };
-  Channel(mechanizm::id_t sid, Effect e, int v)
-      : sequenceId(sid), effect(e), value(v){};
+  Channel(mechanizm::Sequence *s, Effect e = Effect::INC,
+          Interpolation i = Interpolation::LINEAR, int v = 0)
+      : sequence(s), sequenceId(s->id), effect(e), interpolation(i), value(v) {
+    name = sequence->name;
+  };
+  bool operator==(const Channel &o) const { return o.id == this->id; }
 
   Json::Value JsonValue() const override {
     Json::Value root;
     root["sequenceId"] = sequenceId;
     root["effect"] = effect;
+    root["interpolation"] = interpolation;
     root["value"] = value;
+    root["name"] = name;
     return root;
   };
 
   void SetJsonValue(const Json::Value root) override {
     sequenceId = root["sequenceId"].asLargestUInt();
     effect = (Effect)root["effect"].asLargestUInt();
+    interpolation = (Interpolation)root["interpolation"].asLargestUInt();
     value = root["value"].asLargestInt();
+    name = root["name"].asString();
   };
-
-  void onSequencesChanged(std::vector<mechanizm::Sequence *>);
 
   mechanizm::Sequence *sequence;
   mechanizm::id_t sequenceId;
   Effect effect;
+  Interpolation interpolation;
   int value;
+  std::string name;
+  mechanizm::id_t id;
 
 protected:
 private:
@@ -46,12 +57,14 @@ public:
   static const mechanizm::id_t getNextId(std::vector<Mapping *>);
 
   Mapping(const Json::Value root) { SetJsonValue(root); };
-  Mapping(mechanizm::id_t i, std::string n, mechanizm::Clip *c) 
-    : id(i), name(n), clip(c), clipId(c->id) {};
+  Mapping(mechanizm::id_t i, std::string n, mechanizm::Clip *c)
+      : id(i), name(n), clip(c), clipId(c->id){};
 
   Json::Value JsonValue() const override;
   void SetJsonValue(const Json::Value root) override;
   void loadChannel(Json::Value json);
+  void addChannel(mechanizm::Channel c);
+  void removeChannel(mechanizm::Channel c);
 
   void onSequencesChanged(std::vector<mechanizm::Sequence *>);
   void onClipsChanged(std::vector<mechanizm::Clip *>);
