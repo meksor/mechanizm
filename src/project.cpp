@@ -158,6 +158,7 @@ void Project::connectMapping(mechanizm::Mapping *m) {
 
 void Project::loadMapping(Json::Value json) {
   mechanizm::Mapping *mapping = new mechanizm::Mapping(json);
+  connectMapping(mapping);
   mappings.push_back(mapping);
 }
 
