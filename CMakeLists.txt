@@ -17,9 +17,22 @@ include(ExternalProject)
 find_package(Qt5Widgets REQUIRED)
 include_directories(/usr/include/qt/QtCore)
 
+ExternalProject_Add(cppzmq-dl
+  GIT_REPOSITORY "https://github.com/zeromq/cppzmq"
+  GIT_TAG "v4.10.0"
+  PREFIX ${CMAKE_CURRENT_BINARY_DIR}/third
+  CMAKE_CACHE_ARGS
+    -DCMAKE_INSTALL_PREFIX:STRING=${CMAKE_CURRENT_BINARY_DIR}/third
+    -DCMAKE_BUILD_TYPE:STRING=${CMAKE_BUILD_TYPE}
+)
+SET(ZMQ_INCLUDE_DIR ${CMAKE_CURRENT_BINARY_DIR}/third/include/cppzmq/)
+SET(ZMQ_LIB_DIR ${CMAKE_CURRENT_BINARY_DIR}/third/lib)
+SET(ZMQ_CMAKE_PATH ${CMAKE_CURRENT_BINARY_DIR}/third/src/cppzmq-dl-build)
+
+
 ExternalProject_Add(libopenshot-audio-dl
   GIT_REPOSITORY "https://github.com/OpenShot/libopenshot-audio"
-  GIT_TAG "origin/master"
+  GIT_TAG "v0.3.2"
   PREFIX ${CMAKE_CURRENT_BINARY_DIR}/third
   CMAKE_CACHE_ARGS
     -DCMAKE_INSTALL_PREFIX:STRING=${CMAKE_CURRENT_BINARY_DIR}/third
@@ -32,7 +45,7 @@ SET(OSA_CMAKE_PATH ${CMAKE_CURRENT_BINARY_DIR}/third/src/libopenshot-audio-dl-bu
 
 ExternalProject_Add(libopenshot-dl
   GIT_REPOSITORY "https://github.com/OpenShot/libopenshot"
-  GIT_TAG "7617e9165e67ef68525aa9cc247dd54bd384c724"
+  GIT_TAG "v0.3.2"
   PREFIX ${CMAKE_CURRENT_BINARY_DIR}/third
   CMAKE_CACHE_ARGS
     -DENABLE_MAGICK:BOOL=0
@@ -60,6 +73,10 @@ ExternalProject_Add(cxxmidi-dl
 
 SET(CM_INCLUDE_DIR ${CMAKE_CURRENT_BINARY_DIR}/third/include/)
 
+add_library(cppzmq SHARED IMPORTED)
+set_target_properties(cppzmq PROPERTIES IMPORTED_LOCATION ${ZMQ_LIB_DIR}/cppzmq.so)
+include_directories(${ZMQ_INCLUDE_DIR})
+
 add_library(libopenshot-audio SHARED IMPORTED)
 set_target_properties(libopenshot-audio PROPERTIES IMPORTED_LOCATION ${OSA_LIB_DIR}/libopenshot-audio.so)
 include_directories(${OSA_INCLUDE_DIR})
@@ -79,6 +96,7 @@ include_directories(src)
 
 target_link_libraries(mechanizm libopenshot)
 add_dependencies(mechanizm libopenshot-dl)
+add_dependencies(libopenshot-dl cppzmq)
 
 target_link_libraries(mechanizm libopenshot-audio)
 add_dependencies(mechanizm libopenshot-audio-dl)
