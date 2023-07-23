@@ -94,4 +94,13 @@ void Sequence::onSourcesChanged(std::vector<mechanizm::Source *> sources) {
   source = *res;
 };
 
+mechanizm::TimeStep Sequence::getNextTimestep(double pos) {
+  for (auto ts : timeSteps) {
+    if (ts.note > pos) {
+      return ts;
+    }
+  }
+  return mechanizm::TimeStep(-1, -1);
+};
+
 } // namespace mechanizm

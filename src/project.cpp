@@ -10,11 +10,18 @@ namespace mechanizm {
 
 Project::Project(QDir &rootDir) {
   mechanizm::JsonStorable::loadFromDisk(rootDir);
+  makeCompositor();
 }
 
 Project::Project(QDir &rootDir, std::string name) : name(name) {
   mechanizm::JsonStorable::create(rootDir);
   mechanizm::JsonStorable::saveToDisk();
+  makeCompositor();
+}
+
+void Project::makeCompositor() {
+  compositor = mechanizm::Compositor();
+  compositor.setBpm(bpm);
 }
 
 void Project::setDefaults() {
@@ -150,8 +157,7 @@ void Project::removeSequence(mechanizm::Sequence *seq) {
 void Project::connectMapping(mechanizm::Mapping *m) {
   connect(this, &Project::sequencesChanged, m,
           &mechanizm::Mapping::onSequencesChanged);
-  connect(this, &Project::clipsChanged, m,
-          &mechanizm::Mapping::onClipsChanged);
+  connect(this, &Project::clipsChanged, m, &mechanizm::Mapping::onClipsChanged);
   connect(m, &Mapping::updated,
           [this]() { emit this->mappingsChanged(this->mappings); });
 }

@@ -3,7 +3,8 @@
 #include "sequence.h"
 #include <cstddef>
 #include <json/value.h>
-#include <unistd.h>
+#include <limits>
+#include <tuple>
 
 namespace mechanizm {
 
@@ -62,6 +63,37 @@ void Mapping::addChannel(mechanizm::Channel channel) {
 void Mapping::removeChannel(mechanizm::Channel channel) {
   auto item = std::find(channels.begin(), channels.end(), channel);
   channels.erase(item);
+}
+void Mapping::onChannelsChanged() {}
+
+std::pair<mechanizm::TimeStep, const mechanizm::Channel *>
+getNextTimestep(std::vector<mechanizm::Channel> channels, double pos) {
+
+  double minDt = std::numeric_limits<double>::max();
+  mechanizm::TimeStep minTs(-1, 0);
+  const mechanizm::Channel *minChannel = nullptr;
+  for (auto const &c : channels) {
+    mechanizm::TimeStep ts = c.sequence->getNextTimestep(pos);
+    double dt = ts.note - pos;
+    if (dt < minDt) {
+      minDt = dt;
+      minTs = ts;
+      minChannel = &c;
+    }
+  }
+  return {minTs, minChannel};
+}
+Mapping::channelts_t Mapping::getChannelTimeseries() {
+  channelts_t tseries;
+  double pos = 0;
+  mechanizm::TimeStep tstep(-1, -1);
+  do {
+    auto next = getNextTimestep(channels, pos);
+    tstep = next.first;
+    tseries.push_back(next);
+  } while (tstep.id != -1);
+
+  return tseries;
 }
 
 void Mapping::onSequencesChanged(std::vector<mechanizm::Sequence *> sequences) {

@@ -35,14 +35,25 @@ const mechanizm::id_t Clip::getNextId(std::vector<Clip *> items) {
   return (*maxId) + 1;
 }
 
+std::vector<long>
+getFrameList(std::vector<mechanizm::RythmicPoint> rythmicPoints) {
+  std::vector<long> frames(rythmicPoints.size());
+  std::transform(rythmicPoints.cbegin(), rythmicPoints.cend(), frames.begin(),
+                 [](RythmicPoint i) { return i.frame; });
+  return frames;
+}
 long Clip::getFirstFrame() {
   if (rythmicPoints.size() == 0)
     return 0;
-  std::vector<long> ids(rythmicPoints.size());
-  std::transform(rythmicPoints.cbegin(), rythmicPoints.cend(), ids.begin(),
-                 [](RythmicPoint i) { return i.frame; });
-  auto minFrame = std::min_element(ids.begin(), ids.end());
-  return *minFrame;
+  auto frames = getFrameList(rythmicPoints);
+  return *std::min_element(frames.begin(), frames.end());
+}
+
+long Clip::getLastFrame() {
+  if (rythmicPoints.size() == 0)
+    return 0;
+  auto frames = getFrameList(rythmicPoints);
+  return *std::max_element(frames.begin(), frames.end());
 }
 
 Clip::Clip(mechanizm::id_t i, mechanizm::Source *s) : id(i), source(s) {

@@ -3,7 +3,9 @@
 #include "json.h"
 #include "sequence.h"
 #include "source.h"
+#include <libopenshot/Clip.h>
 #include <string>
+#include <vector>
 
 namespace mechanizm {
 
@@ -55,6 +57,9 @@ class Mapping : public QObject, public mechanizm::JsonSerializable {
   Q_OBJECT
 public:
   static const mechanizm::id_t getNextId(std::vector<Mapping *>);
+  typedef std::vector<
+      std::tuple<mechanizm::TimeStep, const mechanizm::Channel *>>
+      channelts_t;
 
   Mapping(const Json::Value root) { SetJsonValue(root); };
   Mapping(mechanizm::id_t i, std::string n, mechanizm::Clip *c)
@@ -68,6 +73,9 @@ public:
 
   void onSequencesChanged(std::vector<mechanizm::Sequence *>);
   void onClipsChanged(std::vector<mechanizm::Clip *>);
+  void onChannelsChanged();
+
+  channelts_t getChannelTimeseries();
 
   void setName(QString n) {
     name = n.toStdString();

@@ -1,5 +1,6 @@
 #pragma once
 #include "clip.h"
+#include "compositor.h"
 #include "json.h"
 #include "mapping.h"
 #include "sequence.h"
@@ -26,10 +27,12 @@ public:
   virtual QString getJsonFileName() const override { return "project.json"; };
   virtual void setupDirectory() override;
 
-  void setBpm(double b) { bpm = b; };
+  void setBpm(double b) {
+    bpm = b;
+    compositor.setBpm(b);
+  };
   void setName(QString n) { name = n.toStdString(); };
   QString getPath() const { return this->rootDir.absolutePath(); };
-
 
   // TODO: free mem on remove*
   void loadSource(Json::Value);
@@ -51,6 +54,7 @@ public:
   void addMapping(mechanizm::Mapping *);
   void removeMapping(mechanizm::Mapping *);
 
+  void makeCompositor();
   void setDefaults();
 
   void emitAll() {
@@ -63,6 +67,8 @@ public:
   std::string name;
   double bpm;
   std::pair<int, int> timeDivision;
+
+  mechanizm::Compositor compositor;
 
   std::vector<mechanizm::Source *> sources;
   std::vector<mechanizm::Clip *> clips;

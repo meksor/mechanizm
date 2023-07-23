@@ -44,6 +44,7 @@ public:
     emit updated();
   };
   long getFirstFrame();
+  long getLastFrame();
   // std::vector<mechanizm::RythmicPoint> eclipsedRythmicPoints();
   void loadRythmicPoint(Json::Value json);
   void removeRythmicPoint(mechanizm::RythmicPoint json);

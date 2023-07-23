@@ -14,11 +14,11 @@ public:
 
   Json::Value JsonValue() const override;
   void SetJsonValue(const Json::Value root) override;
+  double note;
+  mechanizm::id_t id;
 
 protected:
 private:
-  mechanizm::id_t id;
-  double note;
 };
 
 class Sequence : public QObject, public mechanizm::JsonSerializable {
@@ -37,6 +37,8 @@ public:
     name = n.toStdString();
     emit updated();
   };
+
+  mechanizm::TimeStep getNextTimestep(double p);
 
   void loadTimeStep(Json::Value json);
   void onSourcesChanged(std::vector<mechanizm::Source *>);
