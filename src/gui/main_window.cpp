@@ -117,7 +117,6 @@ void MainWindow::newProject() {
     }
 
     mechanizm::Project *p = new mechanizm::Project(dir, name.toStdString());
-    p->setDefaults();
     changeProject(p);
   }
 }

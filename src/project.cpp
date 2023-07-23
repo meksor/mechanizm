@@ -15,8 +15,9 @@ Project::Project(QDir &rootDir) {
 
 Project::Project(QDir &rootDir, std::string name) : name(name) {
   mechanizm::JsonStorable::create(rootDir);
-  mechanizm::JsonStorable::saveToDisk();
+  setDefaults();
   makeCompositor();
+  mechanizm::JsonStorable::saveToDisk();
 }
 
 void Project::makeCompositor() {
@@ -27,7 +28,6 @@ void Project::makeCompositor() {
 void Project::setDefaults() {
   bpm = 120.;
   timeDivision = std::make_pair(4, 4);
-  mechanizm::JsonStorable::saveToDisk();
 }
 
 void Project::setupDirectory() {
