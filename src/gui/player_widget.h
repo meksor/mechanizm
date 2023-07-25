@@ -31,6 +31,7 @@ public:
   QAction *tsAct;
 
   void setClip(mechanizm::Clip *);
+  void setReader(openshot::ReaderBase *r);
   void onRythmicPointSelected(mechanizm::RythmicPoint);
 
   void increaseSpeed();

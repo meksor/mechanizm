@@ -1,7 +1,13 @@
 #include "mapping_editor_window.h"
+#include "FFmpegReader.h"
+#include "Fraction.h"
+#include "FrameMapper.h"
 #include "clip.h"
 #include "mapping.h"
 #include <QHeaderView>
+#include <cmath>
+#include <libopenshot/FFmpegReader.h>
+#include <libopenshot/FFmpegWriter.h>
 
 namespace mechanizm {
 MappingEditorWindow::MappingEditorWindow(QWidget *parent, Qt::WindowFlags flags)
@@ -86,7 +92,28 @@ void MappingEditorWindow::onMappingSelected(mechanizm::Mapping *m) {
 }
 
 void MappingEditorWindow::renderPreview() {
-  this->project->compositor.compose(mapping);
+  if (previewTimeline != nullptr) {
+    delete previewTimeline;
+  }
+  openshot::Clip *clip = this->project->compositor.compose(mapping);
+  auto info = clip->Reader()->info;
+  previewTimeline = new openshot::Timeline(info);
+  previewTimeline->AddClip(clip);
+  player->setReader(previewTimeline);
+
+  openshot::Timeline renderTimeline(info);
+  renderTimeline.AddClip(clip);
+
+  renderTimeline.Open();
+  openshot::FFmpegWriter writer("./test.mkv");
+  writer.SetVideoOptions(true, "libx265", info.fps, info.width, info.height,
+                         info.pixel_ratio, false, false, 300000);
+
+  writer.Open();
+  int length = renderTimeline.GetMaxFrame();
+  writer.WriteFrame(&renderTimeline, 0, length);
+  writer.Close();
+  renderTimeline.Close();
 }
 
 } // namespace mechanizm

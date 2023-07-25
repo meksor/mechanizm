@@ -6,6 +6,8 @@
 #include <QMenu>
 #include <QMenuBar>
 #include <QWidget>
+#include <cstddef>
+#include <libopenshot/Timeline.h>
 
 #include "channel_table.h"
 #include "gui/player_widget.h"
@@ -24,7 +26,6 @@ public:
   void onSequenceSelected(mechanizm::Sequence *s) { sequence = s; };
   void onMappingSelected(mechanizm::Mapping *m);
   void onProjectChanged(mechanizm::Project *p) { project = p; };
-
   void createMenus();
   void createActions();
 
@@ -49,5 +50,6 @@ private:
   mechanizm::PlayerWidget *player;
   mechanizm::Project *project;
   mechanizm::Mapping *mapping;
+  openshot::Timeline *previewTimeline = nullptr;
 };
 } // namespace mechanizm

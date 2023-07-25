@@ -91,22 +91,27 @@ Mapping::channelts_t Mapping::getChannelTimeseries() {
     auto next = getNextTimestep(channels, pos);
     tstep = next.first;
     tseries.push_back(next);
+    pos = tstep.note;
   } while (tstep.id != -1);
 
   return tseries;
 }
 
 void Mapping::onSequencesChanged(std::vector<mechanizm::Sequence *> sequences) {
-  std::vector<mechanizm::Channel> staleChannels(this->channels);
-  this->channels.clear();
-  for (auto const &x : staleChannels) {
-    auto id_matches = [this, x](mechanizm::Sequence *s) {
-      return s->id == x.sequence->id;
+  int size = this->channels.size();
+  for (int i = 0; i < size; i++) {
+    auto id_matches = [this, i](mechanizm::Sequence *s) {
+      return s->id == this->channels[i].sequenceId;
     };
 
     auto res = std::find_if(sequences.begin(), sequences.end(), id_matches);
-    if (res != sequences.end())
-      this->channels.push_back(x);
+    if (res != sequences.end()) {
+      this->channels[i].sequence = *res;
+    } else {
+      this->channels.erase(this->channels.begin() + i);
+      size--;
+      i--;
+    }
   }
 };
 

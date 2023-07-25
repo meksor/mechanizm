@@ -2,6 +2,7 @@
 
 #include "FFmpegReader.h"
 #include "PlayerBase.h"
+#include "Timeline.h"
 #include "gui/player_widget.h"
 
 namespace mechanizm {
@@ -100,6 +101,16 @@ void PlayerWidget::setClip(mechanizm::Clip *clip) {
   // renderWidget->setFixedSize(r->info.width, r->info.height);
   player->Play();
   player->Seek(clip->getFirstFrame());
+  playerSpeed = 1.;
+  player->Speed(playerSpeed);
+  player->Pause();
+}
+
+void PlayerWidget::setReader(openshot::ReaderBase *r) {
+  if (!r->IsOpen())
+    r->Open();
+  player->Reader(r);
+  player->Seek(0);
   playerSpeed = 1.;
   player->Speed(playerSpeed);
   player->Pause();

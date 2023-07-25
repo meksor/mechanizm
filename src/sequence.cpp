@@ -18,7 +18,7 @@ const mechanizm::id_t TimeStep::getNextId(std::vector<TimeStep> items) {
 Json::Value TimeStep::JsonValue() const {
   Json::Value root;
   root["id"] = id;
-  root["frame"] = note;
+  root["note"] = note;
   return root;
 }
 
@@ -62,7 +62,7 @@ Sequence::Sequence(mechanizm::id_t id, mechanizm::Source *source,
   long currentT = 0;
   for (auto ev : track) {
     currentT += ev.Dt();
-    if (ev[0] == MIDI_NOTE_ON) {
+    if ((ev[0] & 0xf0) == MIDI_NOTE_ON) {
       TimeStep step(stepId, double(currentT) / file.TimeDivision());
       this->timeSteps.push_back(step);
       stepId++;
