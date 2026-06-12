@@ -103,12 +103,11 @@ void MainWindow::changeProject(mechanizm::Project *p) {
 
 void MainWindow::saveProject() { project->saveToDisk(); }
 void MainWindow::newProject() {
-  QFileDialog dialog;
-  dialog.setFileMode(QFileDialog::Directory);
-  int result = dialog.exec();
-  QString dirPath;
-  if (result) {
-    dirPath = dialog.selectedFiles()[0];
+  const QString dirPath = QFileDialog::getExistingDirectory(
+      this, tr("Select Directory for New Project"), QDir::homePath(),
+      QFileDialog::ShowDirsOnly | QFileDialog::DontResolveSymlinks);
+
+  if (!dirPath.isEmpty()) {
     QString name = dirPath.mid(dirPath.lastIndexOf("/") + 1);
     QDir dir = QDir(dirPath);
 
@@ -122,13 +121,11 @@ void MainWindow::newProject() {
 }
 
 void MainWindow::openProject() {
-  QFileDialog dialog;
-  dialog.setFileMode(QFileDialog::Directory);
-  dialog.setNameFilter(tr("Mechanizm Project Directory"));
-  int result = dialog.exec();
-  QString dirPath;
-  if (result) {
-    dirPath = dialog.selectedFiles()[0];
+  const QString dirPath = QFileDialog::getExistingDirectory(
+      this, tr("Open Project Directory"), QDir::homePath(),
+      QFileDialog::ShowDirsOnly | QFileDialog::DontResolveSymlinks);
+
+  if (!dirPath.isEmpty()) {
     QDir dir = QDir(dirPath);
 
     if (project != nullptr) {
