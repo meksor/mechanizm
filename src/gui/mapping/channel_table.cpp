@@ -24,8 +24,9 @@ mechanizm::Channel ChannelTable::getSelectedChannel() {
 
 void ChannelTable::onCellChanged(int currentRow, int currentColumn,
                                  int previousRow, int previousColumn) {
-  if (currentRow != previousRow) {
-    emit selectChannel(&channels[this->currentRow()]);
+  if (currentRow != previousRow && currentRow >= 0 &&
+      currentRow < static_cast<int>(channels.size())) {
+    emit selectChannel(&channels[currentRow]);
   }
 }
 
