@@ -56,6 +56,8 @@ private:
 class Mapping : public QObject, public mechanizm::JsonSerializable {
   Q_OBJECT
 public:
+  enum WrapBehaviour : int { LOOP = 0, BOUNCE = 1 };
+
   static const mechanizm::id_t getNextId(std::vector<Mapping *>);
   typedef std::vector<
       std::tuple<mechanizm::TimeStep, const mechanizm::Channel *>>
@@ -84,6 +86,7 @@ public:
 
   mechanizm::id_t id;
   std::string name;
+  WrapBehaviour wrapBehaviour = WrapBehaviour::LOOP;
 
   mechanizm::id_t clipId;
   mechanizm::Clip *clip = nullptr;

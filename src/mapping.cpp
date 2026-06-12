@@ -33,6 +33,7 @@ Json::Value Mapping::JsonValue() const {
   root["id"] = id;
   root["name"] = name;
   root["clipId"] = clipId;
+  root["wrapBehaviour"] = static_cast<int>(wrapBehaviour);
 
   root["channels"] = Json::arrayValue;
   for (int i = 0; i < channels.size(); ++i)
@@ -45,6 +46,9 @@ void Mapping::SetJsonValue(const Json::Value root) {
   id = root["id"].asLargestUInt();
   name = root["name"].asString();
   clipId = root["clipId"].asLargestUInt();
+  wrapBehaviour = root.isMember("wrapBehaviour")
+                      ? static_cast<WrapBehaviour>(root["wrapBehaviour"].asInt())
+                      : WrapBehaviour::LOOP;
 
   const Json::Value channels = root["channels"];
   for (int i = 0; i < channels.size(); ++i)
@@ -71,7 +75,7 @@ void Mapping::removeChannel(mechanizm::Channel channel) {
 void Mapping::onChannelsChanged() { emit updated(); }
 
 std::pair<mechanizm::TimeStep, const mechanizm::Channel *>
-getNextTimestep(std::vector<mechanizm::Channel> channels, double pos) {
+getNextTimestep(const std::vector<mechanizm::Channel> &channels, double pos) {
 
   double minDt = std::numeric_limits<double>::max();
   mechanizm::TimeStep minTs(-1, 0);

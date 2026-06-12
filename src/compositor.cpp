@@ -6,6 +6,19 @@
 #include "sequence.h"
 
 namespace mechanizm {
+
+static int wrapLoop(int point, int size) {
+  if (size <= 0) return 0;
+  return ((point % size) + size) % size;
+}
+
+static int wrapBounce(int point, int size) {
+  if (size <= 1) return 0;
+  int period = 2 * (size - 1);
+  int mod = ((point % period) + period) % period;
+  return (mod < size) ? mod : period - mod;
+}
+
 Compositor::Compositor(){};
 
 openshot::Clip *Compositor::compose(mechanizm::Mapping *m) {
@@ -47,11 +60,14 @@ openshot::Clip *Compositor::compose(mechanizm::Mapping *m) {
       point = point + channel->value;
     } else if (channel->effect == mechanizm::Channel::Effect::DEC) {
       point = point - channel->value;
+    } else if (channel->effect == mechanizm::Channel::Effect::SET) {
+      point = channel->value;
     }
-    if (point == rythmicPoints.size()) {
-      point = 0;
-    } else if (point == -1) {
-      point = rythmicPoints.size() - 1;
+
+    if (m->wrapBehaviour == mechanizm::Mapping::WrapBehaviour::BOUNCE) {
+      point = wrapBounce(point, static_cast<int>(rythmicPoints.size()));
+    } else {
+      point = wrapLoop(point, static_cast<int>(rythmicPoints.size()));
     }
 
     maxT = round(nl * timeStep.note);
