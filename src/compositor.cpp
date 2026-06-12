@@ -9,11 +9,19 @@ namespace mechanizm {
 Compositor::Compositor(){};
 
 openshot::Clip *Compositor::compose(mechanizm::Mapping *m) {
+  if (m == nullptr || m->clip == nullptr || m->clip->source == nullptr) {
+    return nullptr;
+  }
+
   auto c = m->clip;
   if (os_clip != nullptr) {
     delete os_clip;
   }
   os_clip = new openshot::Clip(c->source->path);
+  if (!os_clip->Reader()->IsOpen()) {
+    os_clip->Reader()->Open();
+  }
+
   openshot::Fraction fps = os_clip->Reader()->info.fps;
   // os_clip->Start(c->getFirstFrame() * fps.ToFloat());
   // double end = c->getLastFrame() / fps.ToFloat();
@@ -21,12 +29,20 @@ openshot::Clip *Compositor::compose(mechanizm::Mapping *m) {
   double fpm = (60. * fps.ToFloat());
   double nl = fpm / this->bpm;
   auto rythmicPoints = c->rythmicPoints;
+  if (rythmicPoints.empty()) {
+    return os_clip;
+  }
+
   auto chTs = m->getChannelTimeseries();
 
   int point = 0;
   double maxT = 0;
   for (auto step : chTs) {
     const auto [timeStep, channel] = step;
+    if (channel == nullptr) {
+      continue;
+    }
+
     if (channel->effect == mechanizm::Channel::Effect::INC) {
       point = point + channel->value;
     } else if (channel->effect == mechanizm::Channel::Effect::DEC) {
@@ -43,7 +59,9 @@ openshot::Clip *Compositor::compose(mechanizm::Mapping *m) {
                               openshot::InterpolationType::BEZIER);
     os_clip->time.AddPoint(timePoint);
   }
-  os_clip->time.UpdatePoint(0, os_clip->time.GetPoint(1));
+  if (os_clip->time.GetCount() > 1) {
+    os_clip->time.UpdatePoint(0, os_clip->time.GetPoint(1));
+  }
   return os_clip;
 };
 
