@@ -24,6 +24,7 @@ add_executable(
     gui/mapping/mapping_table.cpp
     gui/mapping/mappings_window.cpp
     gui/mapping/channel_table.cpp
+    gui/mapping/mapping_timeline.cpp
     gui/mapping/mapping_editor_window.cpp
 
 

@@ -17,18 +17,32 @@ include(ExternalProject)
 find_package(Qt5Widgets REQUIRED)
 include_directories(/usr/include/qt/QtCore)
 
-ExternalProject_Add(cppzmq-dl
-  GIT_REPOSITORY "https://github.com/zeromq/cppzmq"
-  GIT_TAG "v4.10.0"
+ExternalProject_Add(libzmq-dl
+  GIT_REPOSITORY "https://github.com/zeromq/libzmq"
+  GIT_TAG "v4.3.5"
   PREFIX ${CMAKE_CURRENT_BINARY_DIR}/third
   CMAKE_CACHE_ARGS
     -DCMAKE_INSTALL_PREFIX:STRING=${CMAKE_CURRENT_BINARY_DIR}/third
     -DCMAKE_BUILD_TYPE:STRING=${CMAKE_BUILD_TYPE}
+    -DWITH_DOCS:BOOL=OFF
+    -DBUILD_TESTS:BOOL=OFF
 )
-SET(ZMQ_INCLUDE_DIR ${CMAKE_CURRENT_BINARY_DIR}/third/include/cppzmq/)
+SET(LIBZMQ_INSTALL_DIR ${CMAKE_CURRENT_BINARY_DIR}/third)
+
+ExternalProject_Add(cppzmq-dl
+  GIT_REPOSITORY "https://github.com/zeromq/cppzmq"
+  GIT_TAG "v4.10.0"
+  PREFIX ${CMAKE_CURRENT_BINARY_DIR}/third
+  DEPENDS libzmq-dl
+  CMAKE_CACHE_ARGS
+    -DCMAKE_INSTALL_PREFIX:STRING=${CMAKE_CURRENT_BINARY_DIR}/third
+    -DCMAKE_BUILD_TYPE:STRING=${CMAKE_BUILD_TYPE}
+    -DCPPZMQ_BUILD_TESTS:BOOL=OFF
+    -DZeroMQ_DIR:STRING=${CMAKE_CURRENT_BINARY_DIR}/third/lib/cmake/ZeroMQ
+)
+SET(ZMQ_INCLUDE_DIR ${CMAKE_CURRENT_BINARY_DIR}/third/include)
 SET(ZMQ_LIB_DIR ${CMAKE_CURRENT_BINARY_DIR}/third/lib)
 SET(ZMQ_CMAKE_PATH ${CMAKE_CURRENT_BINARY_DIR}/third/src/cppzmq-dl-build)
-
 
 ExternalProject_Add(libopenshot-audio-dl
   GIT_REPOSITORY "https://github.com/OpenShot/libopenshot-audio"
@@ -63,7 +77,9 @@ SET(OS_LIB_DIR ${CMAKE_CURRENT_BINARY_DIR}/third/lib)
 
 ExternalProject_Add(cxxmidi-dl
   GIT_REPOSITORY "https://github.com/5tan/cxxmidi"
+  GIT_TAG "main"
   PREFIX ${CMAKE_CURRENT_BINARY_DIR}/third
+  UPDATE_COMMAND ""
   BUILD_COMMAND ""
   CONFIGURE_COMMAND ""
   INSTALL_COMMAND 
@@ -74,7 +90,7 @@ ExternalProject_Add(cxxmidi-dl
 SET(CM_INCLUDE_DIR ${CMAKE_CURRENT_BINARY_DIR}/third/include/)
 
 add_library(cppzmq SHARED IMPORTED)
-set_target_properties(cppzmq PROPERTIES IMPORTED_LOCATION ${ZMQ_LIB_DIR}/cppzmq.so)
+set_target_properties(cppzmq PROPERTIES IMPORTED_LOCATION ${ZMQ_LIB_DIR}/libzmq.so)
 include_directories(${ZMQ_INCLUDE_DIR})
 
 add_library(libopenshot-audio SHARED IMPORTED)
@@ -89,6 +105,7 @@ include_directories(${OS_INCLUDE_DIR})
 
 add_library(cxxmidi SHARED IMPORTED)
 include_directories(${CM_INCLUDE_DIR})
+include_directories(/usr/include/jsoncpp)
 
 
 add_subdirectory(src)
@@ -96,7 +113,7 @@ include_directories(src)
 
 target_link_libraries(mechanizm libopenshot)
 add_dependencies(mechanizm libopenshot-dl)
-add_dependencies(libopenshot-dl cppzmq)
+add_dependencies(libopenshot-dl cppzmq-dl)
 
 target_link_libraries(mechanizm libopenshot-audio)
 add_dependencies(mechanizm libopenshot-audio-dl)

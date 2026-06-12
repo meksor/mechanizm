@@ -4,7 +4,9 @@
 #include "FrameMapper.h"
 #include "clip.h"
 #include "mapping.h"
+#include "mapping_timeline.h"
 #include <QHeaderView>
+#include <QVBoxLayout>
 #include <cmath>
 #include <libopenshot/FFmpegReader.h>
 #include <libopenshot/FFmpegWriter.h>
@@ -24,11 +26,18 @@ MappingEditorWindow::MappingEditorWindow(QWidget *parent, Qt::WindowFlags flags)
   connect(chTable, &mechanizm::ChannelTable::selectChannel, this,
           &MappingEditorWindow::onChannelSelected);
 
+  rightPanel = new QVBoxLayout();
+
+  timeline = new mechanizm::MappingTimeline();
+  timeline->setFixedHeight(180);
+  rightPanel->addWidget(timeline);
+
   player = new mechanizm::PlayerWidget();
   player->setFixedSize(720, 480);
   player->renderWidget->setFixedSize(720, 480);
 
-  hbox->addWidget(player);
+  rightPanel->addWidget(player);
+  hbox->addLayout(rightPanel);
   createMenus();
   setCentralWidget(widget);
 }
@@ -74,21 +83,25 @@ void MappingEditorWindow::onChannelSelected(mechanizm::Channel *c) {
   // channelInfo->onChannelSelected(clip);
 }
 void MappingEditorWindow::removeSelectedChannel() {
+  if (mapping == nullptr) {
+    return;
+  }
   mechanizm::Channel ch = chTable->getSelectedChannel();
   mapping->removeChannel(ch);
-  chTable->onMappingUpdated(mapping);
 };
 void MappingEditorWindow::addChannel() {
+  if (mapping == nullptr || sequence == nullptr) {
+    return;
+  }
   mechanizm::Channel ch(sequence, mechanizm::Channel::Effect::INC,
                         mechanizm::Channel::Interpolation::LINEAR, 1);
   mapping->addChannel(ch);
-  chTable->onMappingUpdated(mapping);
 };
 
 void MappingEditorWindow::onMappingSelected(mechanizm::Mapping *m) {
   mapping = m;
   chTable->onMappingUpdated(mapping);
-  // channelInfo->onChannelSelected(clip);
+  timeline->onMappingSelected(mapping);
 }
 
 void MappingEditorWindow::renderPreview() {

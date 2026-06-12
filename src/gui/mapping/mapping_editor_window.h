@@ -10,6 +10,7 @@
 #include <libopenshot/Timeline.h>
 
 #include "channel_table.h"
+#include "mapping_timeline.h"
 #include "gui/player_widget.h"
 #include "mapping.h"
 #include "project.h"
@@ -38,6 +39,7 @@ private:
   void updateTable();
 
   QHBoxLayout *hbox;
+  QVBoxLayout *rightPanel;
   QAction *previewAct;
   QAction *removeAct;
   QAction *addAct;
@@ -47,6 +49,7 @@ private:
   mechanizm::Channel *channel;
   mechanizm::Sequence *sequence;
   mechanizm::ChannelTable *chTable;
+  mechanizm::MappingTimeline *timeline;
   mechanizm::PlayerWidget *player;
   mechanizm::Project *project;
   mechanizm::Mapping *mapping;

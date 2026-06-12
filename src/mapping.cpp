@@ -58,13 +58,17 @@ void Mapping::loadChannel(Json::Value json) {
 
 void Mapping::addChannel(mechanizm::Channel channel) {
   channels.push_back(channel);
+  onChannelsChanged();
 }
 
 void Mapping::removeChannel(mechanizm::Channel channel) {
   auto item = std::find(channels.begin(), channels.end(), channel);
-  channels.erase(item);
+  if (item != channels.end()) {
+    channels.erase(item);
+    onChannelsChanged();
+  }
 }
-void Mapping::onChannelsChanged() {}
+void Mapping::onChannelsChanged() { emit updated(); }
 
 std::pair<mechanizm::TimeStep, const mechanizm::Channel *>
 getNextTimestep(std::vector<mechanizm::Channel> channels, double pos) {
@@ -73,6 +77,9 @@ getNextTimestep(std::vector<mechanizm::Channel> channels, double pos) {
   mechanizm::TimeStep minTs(-1, 0);
   const mechanizm::Channel *minChannel = nullptr;
   for (auto const &c : channels) {
+    if (c.sequence == nullptr) {
+      continue;
+    }
     mechanizm::TimeStep ts = c.sequence->getNextTimestep(pos);
     double dt = ts.note - pos;
     if (dt < minDt) {
@@ -113,6 +120,7 @@ void Mapping::onSequencesChanged(std::vector<mechanizm::Sequence *> sequences) {
       i--;
     }
   }
+  onChannelsChanged();
 };
 
 void Mapping::onClipsChanged(std::vector<mechanizm::Clip *> clips) {
@@ -120,7 +128,8 @@ void Mapping::onClipsChanged(std::vector<mechanizm::Clip *> clips) {
     return c->id == this->clipId;
   };
   auto res = std::find_if(clips.begin(), clips.end(), id_matches);
-  clip = *res;
+  clip = res == clips.end() ? nullptr : *res;
+  onChannelsChanged();
 };
 
 } // namespace mechanizm
