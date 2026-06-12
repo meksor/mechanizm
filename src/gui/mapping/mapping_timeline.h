@@ -12,6 +12,8 @@ public:
   explicit MappingTimeline(QWidget *parent = nullptr);
 
   void onMappingSelected(mechanizm::Mapping *mapping);
+  void setCursorFrame(double frame);
+  void setBpm(double value);
 
 protected:
   void paintEvent(QPaintEvent *event) override;
@@ -22,6 +24,9 @@ private:
 
   mechanizm::Mapping *mapping = nullptr;
   std::vector<QPointF> curve;
+  bool hasCursorFrame = false;
+  double cursorFrame = 0.0;
+  double bpm = 120.0;
 };
 
 } // namespace mechanizm

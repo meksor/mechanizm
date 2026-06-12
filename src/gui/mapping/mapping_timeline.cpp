@@ -4,6 +4,10 @@
 #include <QPaintEvent>
 #include <QPen>
 #include <QPainterPath>
+#include <cmath>
+#include <limits>
+
+#include <libopenshot/Fraction.h>
 
 namespace mechanizm {
 
@@ -42,6 +46,18 @@ void MappingTimeline::onMappingSelected(mechanizm::Mapping *selectedMapping) {
   update();
 }
 
+void MappingTimeline::setCursorFrame(double frame) {
+  hasCursorFrame = true;
+  cursorFrame = frame;
+  update();
+}
+
+void MappingTimeline::setBpm(double value) {
+  bpm = value;
+  rebuildCurve();
+  update();
+}
+
 void MappingTimeline::rebuildCurve() {
   curve.clear();
 
@@ -52,6 +68,9 @@ void MappingTimeline::rebuildCurve() {
 
   const auto &rythmicPoints = mapping->clip->rythmicPoints;
   auto timeSeries = mapping->getChannelTimeseries();
+  openshot::Fraction fps = mapping->clip->source->reader->info.fps;
+  const double framesPerMinute = 60.0 * fps.ToFloat();
+  const double noteLengthInFrames = framesPerMinute / bpm;
 
   int point = 0;
   double currentFrame = rythmicPoints.front().frame;
@@ -65,8 +84,8 @@ void MappingTimeline::rebuildCurve() {
       continue;
     }
 
-    const double eventNote = timeStep.note;
-    curve.push_back(QPointF(eventNote, currentFrame));
+    const double eventFrame = std::round(noteLengthInFrames * timeStep.note);
+    curve.push_back(QPointF(eventFrame, currentFrame));
 
     switch (channel->effect) {
     case mechanizm::Channel::Effect::INC:
@@ -82,7 +101,7 @@ void MappingTimeline::rebuildCurve() {
 
     point = wrapPointIndex(point, static_cast<int>(rythmicPoints.size()));
     currentFrame = rythmicPoints[point].frame;
-    curve.push_back(QPointF(eventNote, currentFrame));
+    curve.push_back(QPointF(eventFrame, currentFrame));
   }
 }
 
@@ -163,6 +182,36 @@ void MappingTimeline::paintEvent(QPaintEvent *event) {
   painter.setPen(QColor(180, 185, 194));
   painter.drawText(6, plotArea.top() + 12, tr("Frame position"));
   painter.drawText(plotArea.right() - 70, height() - 8, tr("Time"));
+
+  if (hasCursorFrame) {
+    const double clampedCursorXValue = qBound(minX, cursorFrame, maxX);
+    const double xRatio = (clampedCursorXValue - minX) / (maxX - minX);
+    const double cursorX = plotArea.left() + (xRatio * plotArea.width());
+
+    double cursorYValue = curve.front().y();
+    for (const auto &point : curve) {
+      if (point.x() > clampedCursorXValue) {
+        break;
+      }
+      cursorYValue = point.y();
+    }
+
+    const double clampedCursorYValue = qBound(minY, cursorYValue, maxY);
+    const double yRatio = (clampedCursorYValue - minY) / (maxY - minY);
+    const double cursorY = plotArea.bottom() - (yRatio * plotArea.height());
+
+    painter.setPen(QPen(QColor(255, 184, 76), 1.0, Qt::DashLine));
+    painter.drawLine(plotArea.left(), static_cast<int>(cursorY),
+                     plotArea.right(), static_cast<int>(cursorY));
+
+    painter.setPen(QPen(QColor(255, 184, 76), 1.5));
+    painter.drawLine(static_cast<int>(cursorX), plotArea.top(),
+                     static_cast<int>(cursorX), plotArea.bottom());
+
+    painter.setBrush(QColor(255, 184, 76));
+    painter.setPen(Qt::NoPen);
+    painter.drawEllipse(QPointF(cursorX, cursorY), 4.0, 4.0);
+  }
 }
 
 } // namespace mechanizm
