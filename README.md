@@ -4,9 +4,12 @@ A rythm-based video editor. Uses `libopenshot`, `OpenCV` (soon) and `Qt5`. WIP a
 it also has many memory leaks rn
 ## Building
 
-Install `Qt5`, cmake takes care of the rest.
+
 
 ```bash
+$ sudo apt install build-essential qtbase5-dev qt5-qmake qtcreator libqt5svg5-dev libavcodec-dev libavformat-dev libavutil-dev libswscale-dev libavdevice-dev libzmq3-dev libjsoncpp-dev
+
+
 $ mkdir build
 $ cd build
 
