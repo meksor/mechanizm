@@ -2,10 +2,16 @@
 #pragma once
 
 #include <QHBoxLayout>
+#include <QLabel>
 #include <QMainWindow>
 #include <QMenu>
 #include <QMenuBar>
+#include <QProgressBar>
+#include <QComboBox>
+#include <QSpinBox>
+#include <QTimer>
 #include <QWidget>
+#include <QString>
 #include <cstddef>
 #include <libopenshot/Timeline.h>
 
@@ -26,19 +32,39 @@ public:
   void onChannelSelected(mechanizm::Channel *);
   void onSequenceSelected(mechanizm::Sequence *s) { sequence = s; };
   void onMappingSelected(mechanizm::Mapping *m);
-  void onProjectChanged(mechanizm::Project *p) { project = p; };
+  void onProjectChanged(mechanizm::Project *p) {
+    project = p;
+    if (timeline != nullptr && project != nullptr) {
+      timeline->setBpm(project->bpm);
+    }
+    renderPreview();
+  };
   void createMenus();
   void createActions();
 
   void removeSelectedChannel();
   void renderPreview();
+  void onRenderPreviewRequested();
   void addChannel();
+  void onChannelEffectChanged(int effect);
+  void onChannelInterpolationChanged(int interpolation);
+  void onChannelValueChanged(int value);
+  void onWrapBehaviourChanged(int wrapBehaviour);
 
 protected:
 private:
   void updateTable();
+  void disconnectMappingSignals();
+  void schedulePreviewRender();
+  void updateTimelineCursor();
+  void refreshChannelEditor();
+  void updateRenderStatusUi(bool running, int progress,
+                            const QString &message);
+  QString defaultPreviewPath() const;
+  bool renderPreviewToFile(const QString &filePath);
 
   QHBoxLayout *hbox;
+  QVBoxLayout *leftPanel;
   QVBoxLayout *rightPanel;
   QAction *previewAct;
   QAction *removeAct;
@@ -46,13 +72,23 @@ private:
   QMenu *compMenu;
   QMenu *chMenu;
   QMenu *playerMenu;
-  mechanizm::Channel *channel;
-  mechanizm::Sequence *sequence;
+  QComboBox *effectEdit;
+  QComboBox *interpolationEdit;
+  QSpinBox *valueEdit;
+  QComboBox *wrapBehaviourEdit;
+  int selectedChannelRow = -1;
+  mechanizm::Sequence *sequence = nullptr;
   mechanizm::ChannelTable *chTable;
   mechanizm::MappingTimeline *timeline;
   mechanizm::PlayerWidget *player;
-  mechanizm::Project *project;
-  mechanizm::Mapping *mapping;
+  mechanizm::Project *project = nullptr;
+  mechanizm::Mapping *mapping = nullptr;
   openshot::Timeline *previewTimeline = nullptr;
+  QString previewOutputPath;
+  QLabel *renderStatusLabel = nullptr;
+  QProgressBar *renderProgressBar = nullptr;
+  bool isRenderingPreview = false;
+  QTimer *previewRefreshTimer = nullptr;
+  QTimer *cursorSyncTimer = nullptr;
 };
 } // namespace mechanizm
