@@ -26,8 +26,8 @@ private:
 
   QFormLayout *flay;
   QLineEdit *nameEdit;
-  QSpinBox *inFrameEdit;
-  QSpinBox *outFrameEdit;
+  QSpinBox *startFrameEdit;
+  QSpinBox *endFrameEdit;
 };
 
 } // namespace mechanizm

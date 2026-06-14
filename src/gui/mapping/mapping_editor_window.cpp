@@ -18,11 +18,180 @@
 #include <QStandardPaths>
 #include <QVBoxLayout>
 #include <algorithm>
+#include <cmath>
 #include <exception>
+#include <map>
+#include <memory>
+#include <set>
 #include <libopenshot/FFmpegWriter.h>
 #include <libopenshot/FFmpegReader.h>
 
 namespace mechanizm {
+
+namespace {
+
+struct PreviewAudioTrack {
+  mechanizm::Source *source = nullptr;
+  std::vector<double> positionsSeconds;
+};
+
+int wrapMappingPoint(int point, int size,
+                     mechanizm::Mapping::WrapBehaviour wrapBehaviour) {
+  if (size <= 0) {
+    return 0;
+  }
+
+  if (wrapBehaviour == mechanizm::Mapping::WrapBehaviour::BOUNCE) {
+    if (size <= 1) {
+      return 0;
+    }
+    const int period = 2 * (size - 1);
+    int mod = point % period;
+    if (mod < 0) {
+      mod += period;
+    }
+    return (mod < size) ? mod : period - mod;
+  }
+
+  int wrapped = point % size;
+  if (wrapped < 0) {
+    wrapped += size;
+  }
+  return wrapped;
+}
+
+double mappedSourceFrameAtOutputFrame(mechanizm::Mapping *mapping,
+                                      double outputFrame, double bpm) {
+  if (mapping == nullptr || mapping->clip == nullptr ||
+      mapping->clip->source == nullptr ||
+      mapping->clip->source->reader == nullptr) {
+    return outputFrame;
+  }
+
+  const auto &rythmicPoints = mapping->clip->rythmicPoints;
+  if (rythmicPoints.empty()) {
+    return outputFrame;
+  }
+
+  if (bpm <= 0.0) {
+    return rythmicPoints.front().frame;
+  }
+
+  openshot::Fraction fps = mapping->clip->source->reader->info.fps;
+  const double noteLengthInFrames = (60.0 * fps.ToFloat()) / bpm;
+  if (noteLengthInFrames <= 0.0) {
+    return rythmicPoints.front().frame;
+  }
+
+  auto timeSeries = mapping->getChannelTimeseries();
+  int point = 0;
+  double sourceFrame = rythmicPoints.front().frame;
+  for (const auto &step : timeSeries) {
+    const auto &timeStep = std::get<0>(step);
+    const auto *channel = std::get<1>(step);
+
+    if (channel == nullptr) {
+      continue;
+    }
+
+    const double eventFrame = std::round(noteLengthInFrames * timeStep.note);
+    if (outputFrame < eventFrame) {
+      break;
+    }
+
+    switch (channel->effect) {
+    case mechanizm::Channel::Effect::INC:
+      point += channel->value;
+      break;
+    case mechanizm::Channel::Effect::DEC:
+      point -= channel->value;
+      break;
+    case mechanizm::Channel::Effect::SET:
+      point = channel->value;
+      break;
+    }
+
+    point = wrapMappingPoint(point, static_cast<int>(rythmicPoints.size()),
+                             mapping->wrapBehaviour);
+    sourceFrame = rythmicPoints[point].frame;
+  }
+
+  return sourceFrame;
+}
+
+std::vector<PreviewAudioTrack>
+collectPreviewAudioTracks(mechanizm::Mapping *mapping, double bpm) {
+  std::vector<PreviewAudioTrack> tracks;
+  if (mapping == nullptr || bpm <= 0.0) {
+    return tracks;
+  }
+
+  std::map<mechanizm::id_t, PreviewAudioTrack> trackMap;
+  std::map<mechanizm::id_t, std::set<int64_t>> dedupedPositions;
+  for (const auto &channel : mapping->channels) {
+    auto *sequence = channel.sequence;
+    if (sequence == nullptr || sequence->audioSource == nullptr ||
+        sequence->audioSource->type != mechanizm::Source::Type::AUDIO) {
+      continue;
+    }
+
+    auto &track = trackMap[sequence->audioSource->id];
+    track.source = sequence->audioSource;
+    auto &positions = dedupedPositions[sequence->audioSource->id];
+
+    for (const auto &timeStep : sequence->timeSteps) {
+      const double seconds = std::max(0.0, 60.0 * timeStep.note / bpm);
+      const int64_t micros = static_cast<int64_t>(std::llround(seconds * 1000000.0));
+      if (positions.insert(micros).second) {
+        track.positionsSeconds.push_back(seconds);
+      }
+    }
+  }
+
+  tracks.reserve(trackMap.size());
+  for (auto &[sourceId, track] : trackMap) {
+    std::sort(track.positionsSeconds.begin(), track.positionsSeconds.end());
+    tracks.push_back(track);
+  }
+
+  return tracks;
+}
+
+openshot::ReaderInfo buildPreviewInfo(openshot::Clip *clip,
+                                      const std::vector<PreviewAudioTrack> &tracks) {
+  auto info = clip->Reader()->info;
+  if (tracks.empty()) {
+    return info;
+  }
+
+  info.has_audio = true;
+  if (info.sample_rate > 0 && info.channels > 0) {
+    return info;
+  }
+
+  for (const auto &track : tracks) {
+    if (track.source == nullptr || track.source->reader == nullptr) {
+      continue;
+    }
+
+    if (!track.source->reader->IsOpen()) {
+      track.source->reader->Open();
+    }
+
+    const auto &audioInfo = track.source->reader->info;
+    if (audioInfo.sample_rate > 0 && audioInfo.channels > 0) {
+      info.sample_rate = audioInfo.sample_rate;
+      info.channels = audioInfo.channels;
+      info.channel_layout = audioInfo.channel_layout;
+      info.audio_bit_rate = audioInfo.audio_bit_rate;
+      break;
+    }
+  }
+
+  return info;
+}
+
+} // namespace
 
 static QString sanitizeFileComponent(QString text) {
   text = text.trimmed();
@@ -45,65 +214,83 @@ MappingEditorWindow::MappingEditorWindow(QWidget *parent, Qt::WindowFlags flags)
   QWidget *widget = new QWidget;
   hbox = new QHBoxLayout(widget);
 
-    leftPanel = new QVBoxLayout();
+  overviewPanel = new QVBoxLayout();
+  mappingTable = new mechanizm::MappingTable();
+  mappingInfo = new mechanizm::MappingInfo();
+  mappingInfo->setFixedWidth(250);
+  overviewPanel->addWidget(mappingTable);
+  overviewPanel->addWidget(mappingInfo);
+  hbox->addLayout(overviewPanel);
+
+  connect(mappingTable, &mechanizm::MappingTable::selectMapping, this,
+          &MappingEditorWindow::onMappingSelected);
+  connect(mappingTable, &mechanizm::MappingTable::selectMapping, mappingInfo,
+          &MappingInfo::onMappingSelected);
+
+  leftPanel = new QVBoxLayout();
 
   chTable = new mechanizm::ChannelTable();
   chTable->setFixedWidth(250);
-    leftPanel->addWidget(chTable);
+  leftPanel->addWidget(chTable);
   connect(chTable, &mechanizm::ChannelTable::selectChannel, this,
           &MappingEditorWindow::onChannelSelected);
 
-    // Mapping-level settings
-    auto *mappingSettingsWidget = new QWidget();
-    auto *mappingSettingsLayout = new QFormLayout(mappingSettingsWidget);
-    wrapBehaviourEdit = new QComboBox(mappingSettingsWidget);
-    wrapBehaviourEdit->addItem("Loop", static_cast<int>(mechanizm::Mapping::WrapBehaviour::LOOP));
-    wrapBehaviourEdit->addItem("Bounce", static_cast<int>(mechanizm::Mapping::WrapBehaviour::BOUNCE));
-    mappingSettingsLayout->addRow(tr("Wrap"), wrapBehaviourEdit);
-    leftPanel->addWidget(mappingSettingsWidget);
-    connect(wrapBehaviourEdit, QOverload<int>::of(&QComboBox::currentIndexChanged), this,
-      [this](int index) {
-        onWrapBehaviourChanged(wrapBehaviourEdit->itemData(index).toInt());
-      });
+  // Mapping-level settings
+  auto *mappingSettingsWidget = new QWidget();
+  auto *mappingSettingsLayout = new QFormLayout(mappingSettingsWidget);
+  wrapBehaviourEdit = new QComboBox(mappingSettingsWidget);
+  wrapBehaviourEdit->addItem(
+      "Loop", static_cast<int>(mechanizm::Mapping::WrapBehaviour::LOOP));
+  wrapBehaviourEdit->addItem(
+      "Bounce", static_cast<int>(mechanizm::Mapping::WrapBehaviour::BOUNCE));
+  mappingSettingsLayout->addRow(tr("Wrap"), wrapBehaviourEdit);
+  leftPanel->addWidget(mappingSettingsWidget);
+  connect(wrapBehaviourEdit, QOverload<int>::of(&QComboBox::currentIndexChanged),
+          this, [this](int index) {
+            onWrapBehaviourChanged(wrapBehaviourEdit->itemData(index).toInt());
+          });
 
-    auto *channelEditorWidget = new QWidget();
-    auto *channelEditorLayout = new QFormLayout(channelEditorWidget);
-    effectEdit = new QComboBox(channelEditorWidget);
-    effectEdit->addItem("Inc", static_cast<int>(mechanizm::Channel::Effect::INC));
-    effectEdit->addItem("Dec", static_cast<int>(mechanizm::Channel::Effect::DEC));
-    effectEdit->addItem("Set", static_cast<int>(mechanizm::Channel::Effect::SET));
+  auto *channelEditorWidget = new QWidget();
+  auto *channelEditorLayout = new QFormLayout(channelEditorWidget);
+  effectEdit = new QComboBox(channelEditorWidget);
+  effectEdit->addItem("Inc", static_cast<int>(mechanizm::Channel::Effect::INC));
+  effectEdit->addItem("Dec", static_cast<int>(mechanizm::Channel::Effect::DEC));
+  effectEdit->addItem("Set", static_cast<int>(mechanizm::Channel::Effect::SET));
 
-    interpolationEdit = new QComboBox(channelEditorWidget);
-    interpolationEdit->addItem("None",
-             static_cast<int>(mechanizm::Channel::Interpolation::NONE));
-    interpolationEdit->addItem("Linear", static_cast<int>(
-              mechanizm::Channel::Interpolation::LINEAR));
+  interpolationEdit = new QComboBox(channelEditorWidget);
+  interpolationEdit->addItem(
+      "None", static_cast<int>(mechanizm::Channel::Interpolation::NONE));
+  interpolationEdit->addItem(
+      "Linear", static_cast<int>(mechanizm::Channel::Interpolation::LINEAR));
 
-    valueEdit = new QSpinBox(channelEditorWidget);
-    valueEdit->setRange(-9999, 9999);
+  valueEdit = new QSpinBox(channelEditorWidget);
+  valueEdit->setRange(-9999, 9999);
 
-    channelEditorLayout->addRow(tr("Effect"), effectEdit);
-    channelEditorLayout->addRow(tr("Interpolation"), interpolationEdit);
-    channelEditorLayout->addRow(tr("Value"), valueEdit);
-    leftPanel->addWidget(channelEditorWidget);
-    leftPanel->addStretch();
+  channelEditorLayout->addRow(tr("Effect"), effectEdit);
+  channelEditorLayout->addRow(tr("Interpolation"), interpolationEdit);
+  channelEditorLayout->addRow(tr("Value"), valueEdit);
+  leftPanel->addWidget(channelEditorWidget);
+  leftPanel->addStretch();
 
-    connect(effectEdit, QOverload<int>::of(&QComboBox::currentIndexChanged), this,
-      [this](int index) {
-        onChannelEffectChanged(effectEdit->itemData(index).toInt());
-      });
-    connect(interpolationEdit,
-      QOverload<int>::of(&QComboBox::currentIndexChanged), this,
-      [this](int index) {
-        onChannelInterpolationChanged(
-      interpolationEdit->itemData(index).toInt());
-      });
-    connect(valueEdit, QOverload<int>::of(&QSpinBox::valueChanged), this,
-      &MappingEditorWindow::onChannelValueChanged);
+  connect(effectEdit, QOverload<int>::of(&QComboBox::currentIndexChanged), this,
+          [this](int index) {
+            onChannelEffectChanged(effectEdit->itemData(index).toInt());
+          });
+  connect(interpolationEdit, QOverload<int>::of(&QComboBox::currentIndexChanged),
+          this, [this](int index) {
+            onChannelInterpolationChanged(
+                interpolationEdit->itemData(index).toInt());
+          });
+  connect(valueEdit, QOverload<int>::of(&QSpinBox::valueChanged), this,
+          &MappingEditorWindow::onChannelValueChanged);
 
-    hbox->addLayout(leftPanel);
+  hbox->addLayout(leftPanel);
 
   rightPanel = new QVBoxLayout();
+
+  clipTimeline = new mechanizm::ClipTimeline();
+  clipTimeline->setFixedHeight(130);
+  rightPanel->addWidget(clipTimeline);
 
   timeline = new mechanizm::MappingTimeline();
   timeline->setFixedHeight(180);
@@ -116,19 +303,19 @@ MappingEditorWindow::MappingEditorWindow(QWidget *parent, Qt::WindowFlags flags)
   rightPanel->addWidget(player);
   hbox->addLayout(rightPanel);
 
-    previewRefreshTimer = new QTimer(this);
-    previewRefreshTimer->setSingleShot(true);
-    previewRefreshTimer->setInterval(120);
-    connect(previewRefreshTimer, &QTimer::timeout, this,
+  previewRefreshTimer = new QTimer(this);
+  previewRefreshTimer->setSingleShot(true);
+  previewRefreshTimer->setInterval(120);
+  connect(previewRefreshTimer, &QTimer::timeout, this,
       &MappingEditorWindow::renderPreview);
 
-    cursorSyncTimer = new QTimer(this);
-    cursorSyncTimer->setInterval(33);
-    connect(cursorSyncTimer, &QTimer::timeout, this,
+  cursorSyncTimer = new QTimer(this);
+  cursorSyncTimer->setInterval(33);
+  connect(cursorSyncTimer, &QTimer::timeout, this,
       &MappingEditorWindow::updateTimelineCursor);
-    cursorSyncTimer->start();
+  cursorSyncTimer->start();
 
-    refreshChannelEditor();
+  refreshChannelEditor();
 
   createMenus();
 
@@ -142,6 +329,17 @@ MappingEditorWindow::MappingEditorWindow(QWidget *parent, Qt::WindowFlags flags)
   updateRenderStatusUi(false, 0, tr("Render: idle"));
 
   setCentralWidget(widget);
+}
+
+void MappingEditorWindow::onProjectChanged(mechanizm::Project *p) {
+  project = p;
+  connect(project, &Project::mappingsChanged, mappingTable,
+          &mechanizm::MappingTable::onMappingsChanged,
+          Qt::UniqueConnection);
+  if (timeline != nullptr && project != nullptr) {
+    timeline->setBpm(project->bpm);
+  }
+  renderPreview();
 }
 
 void MappingEditorWindow::createActions() {
@@ -210,9 +408,11 @@ void MappingEditorWindow::addChannel() {
 void MappingEditorWindow::onMappingSelected(mechanizm::Mapping *m) {
   disconnectMappingSignals();
   mapping = m;
+  mappingInfo->onMappingSelected(mapping);
   selectedChannelRow = -1;
   chTable->onMappingUpdated(mapping);
   timeline->onMappingSelected(mapping);
+  clipTimeline->onClipSelected(mapping != nullptr ? mapping->clip : nullptr);
   refreshChannelEditor();
 
   if (mapping != nullptr) {
@@ -244,11 +444,8 @@ void MappingEditorWindow::renderPreview() {
     return;
   }
 
-  player->player->Stop();
-
-  if (previewTimeline != nullptr) {
-    delete previewTimeline;
-    previewTimeline = nullptr;
+  if (player != nullptr && player->player != nullptr) {
+    player->player->Pause();
   }
 
   openshot::Clip *clip = this->project->compositor.compose(mapping);
@@ -259,10 +456,73 @@ void MappingEditorWindow::renderPreview() {
   if (!clip->Reader()->IsOpen()) {
     clip->Reader()->Open();
   }
-  auto info = clip->Reader()->info;
-  previewTimeline = new openshot::Timeline(info);
+  const auto previewAudioTracks =
+      collectPreviewAudioTracks(mapping, project->bpm);
+  auto info = buildPreviewInfo(clip, previewAudioTracks);
+
+  const bool recreateTimeline =
+      previewTimeline == nullptr ||
+      previewTimeline->info.width != info.width ||
+      previewTimeline->info.height != info.height ||
+      previewTimeline->info.sample_rate != info.sample_rate ||
+      previewTimeline->info.channels != info.channels ||
+      previewTimeline->info.channel_layout != info.channel_layout ||
+      previewTimeline->info.fps.num != info.fps.num ||
+      previewTimeline->info.fps.den != info.fps.den;
+
+  if (recreateTimeline) {
+    if (previewTimeline != nullptr) {
+      delete previewTimeline;
+      previewTimeline = nullptr;
+    }
+    previewTimeline = new openshot::Timeline(info);
+    if (previewTimeline->GetCache() != nullptr) {
+      previewTimeline->GetCache()->SetMaxBytesFromInfo(
+          120, info.width, info.height,
+          info.sample_rate, info.channels);
+    }
+  } else {
+    previewTimeline->Clear();
+  }
+
+  previewAudioClips.clear();
   previewTimeline->AddClip(clip);
+  previewClip = clip;
+
+  int audioLayer = 1;
+  for (const auto &track : previewAudioTracks) {
+    if (track.source == nullptr || track.source->reader == nullptr) {
+      continue;
+    }
+
+    if (!track.source->reader->IsOpen()) {
+      track.source->reader->Open();
+    }
+
+    const double duration =
+        std::max(0.05, static_cast<double>(track.source->reader->info.duration));
+    for (double positionSeconds : track.positionsSeconds) {
+      auto audioClip = std::make_unique<openshot::Clip>(track.source->path);
+      audioClip->Position(static_cast<float>(positionSeconds));
+      audioClip->Start(0.0f);
+      audioClip->End(static_cast<float>(duration));
+      audioClip->Layer(audioLayer);
+      audioClip->alpha.AddPoint(1, 0.0);
+      previewTimeline->AddClip(audioClip.get());
+      previewAudioClips.push_back(std::move(audioClip));
+    }
+    audioLayer++;
+  }
+
+  previewTimeline->ClearAllCache(false);
   player->setReader(previewTimeline);
+
+  if (clip->GetCache() != nullptr) {
+    clip->GetCache()->SetMaxBytesFromInfo(
+        120, info.width, info.height,
+        info.sample_rate, info.channels);
+  }
+
   updateTimelineCursor();
 }
 
@@ -405,11 +665,19 @@ void MappingEditorWindow::updateRenderStatusUi(bool running, int progress,
 }
 
 void MappingEditorWindow::updateTimelineCursor() {
-  if (timeline == nullptr || player == nullptr || player->player == nullptr) {
+  if (player == nullptr || player->player == nullptr) {
     return;
   }
 
-  timeline->setCursorFrame(player->player->Position());
+  const double outputFrame = player->player->Position();
+  if (timeline != nullptr) {
+    timeline->setCursorFrame(outputFrame);
+  }
+  if (clipTimeline != nullptr) {
+    const double sourceFrame = mappedSourceFrameAtOutputFrame(
+        mapping, outputFrame, project != nullptr ? project->bpm : 120.0);
+    clipTimeline->setCursorFrame(sourceFrame);
+  }
 }
 
 void MappingEditorWindow::refreshChannelEditor() {

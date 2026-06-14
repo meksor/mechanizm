@@ -7,6 +7,7 @@ const Source::ext_map_t &Source::getExtentionMap() {
   static const auto *map = new Source::ext_map_t({
       {Source::Type::VIDEO, {".mp4", ".mov", ".mkv"}},
       {Source::Type::MIDI, {".mid", ".midi"}},
+      {Source::Type::AUDIO, {".wav", ".mp3", ".ogg", ".flac", ".m4a", ".aac"}},
   });
   return *map;
 };
@@ -14,6 +15,7 @@ const Source::dpn_map_t &Source::getdpNameMap() {
   static const auto *map = new Source::dpn_map_t({
       {Source::Type::VIDEO, "Video"},
       {Source::Type::MIDI, "Midi"},
+      {Source::Type::AUDIO, "Audio"},
   });
   return *map;
 };
@@ -33,6 +35,7 @@ Source::Source(mechanizm::id_t id, std::string path) : id(id), path(path) {
   int lastDotIdx = path.find_last_of(".");
   name = path.substr(firstCharIdx);
   extension = path.substr(lastDotIdx);
+  type = Source::Type::VIDEO;
   for (auto const &[key, val] : Source::getExtentionMap()) {
     if (val.contains(extension)) {
       type = key;
@@ -61,7 +64,12 @@ void Source::SetJsonValue(const Json::Value root) {
 }
 
 void Source::initReader() {
-  if (type == Type::VIDEO) {
+  if (reader != nullptr) {
+    delete reader;
+    reader = nullptr;
+  }
+
+  if (type == Type::VIDEO || type == Type::AUDIO) {
     reader = new openshot::FFmpegReader(path);
   }
 }

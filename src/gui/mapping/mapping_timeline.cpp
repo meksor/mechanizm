@@ -1,24 +1,36 @@
 #include "gui/mapping/mapping_timeline.h"
 
 #include <QPainter>
-#include <QPaintEvent>
-#include <QPen>
 #include <QPainterPath>
+#include <QPen>
 #include <cmath>
-#include <limits>
 
 #include <libopenshot/Fraction.h>
 
 namespace mechanizm {
 
-MappingTimeline::MappingTimeline(QWidget *parent) : QWidget(parent) {
+MappingTimeline::MappingTimeline(QWidget *parent)
+    : AbstractTimelineWidget(parent) {
   setMinimumHeight(180);
   setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Preferred);
 }
 
-int MappingTimeline::wrapPointIndex(int point, int size) {
+int MappingTimeline::wrapPointIndex(int point, int size,
+                                    mechanizm::Mapping::WrapBehaviour wrapBehaviour) {
   if (size <= 0) {
     return 0;
+  }
+
+  if (wrapBehaviour == mechanizm::Mapping::WrapBehaviour::BOUNCE) {
+    if (size <= 1) {
+      return 0;
+    }
+    const int period = 2 * (size - 1);
+    int mod = point % period;
+    if (mod < 0) {
+      mod += period;
+    }
+    return (mod < size) ? mod : period - mod;
   }
 
   int wrapped = point % size;
@@ -99,34 +111,19 @@ void MappingTimeline::rebuildCurve() {
       break;
     }
 
-    point = wrapPointIndex(point, static_cast<int>(rythmicPoints.size()));
+    point = wrapPointIndex(point, static_cast<int>(rythmicPoints.size()),
+                           mapping->wrapBehaviour);
     currentFrame = rythmicPoints[point].frame;
     curve.push_back(QPointF(eventFrame, currentFrame));
   }
 }
 
-void MappingTimeline::paintEvent(QPaintEvent *event) {
-  QWidget::paintEvent(event);
-
-  QPainter painter(this);
-  painter.setRenderHint(QPainter::Antialiasing, true);
-  painter.fillRect(rect(), QColor(20, 24, 30));
-
-  const int left = 48;
-  const int right = 16;
-  const int top = 16;
-  const int bottom = 28;
-  const QRect plotArea(left, top, width() - left - right,
-                       height() - top - bottom);
-
-  painter.setPen(QPen(QColor(54, 62, 74), 1));
-  painter.drawRect(plotArea);
-
+void MappingTimeline::paintTimeline(QPainter &painter, const QRect &plotArea) {
   if (curve.empty()) {
-    painter.setPen(QColor(180, 185, 194));
-    painter.drawText(plotArea, Qt::AlignCenter,
-                     mapping == nullptr ? tr("Select a mapping to view its timeline")
-                                        : tr("No channel curve available"));
+    drawCenteredMessage(painter, plotArea,
+                        mapping == nullptr
+                            ? tr("Select a mapping to view its timeline")
+                            : tr("No channel curve available"));
     return;
   }
 
@@ -157,11 +154,7 @@ void MappingTimeline::paintEvent(QPaintEvent *event) {
     return QPointF(x, y);
   };
 
-  painter.setPen(QPen(QColor(70, 80, 96), 1, Qt::DashLine));
-  for (int i = 1; i < 5; ++i) {
-    const int y = plotArea.top() + (plotArea.height() * i / 5);
-    painter.drawLine(plotArea.left(), y, plotArea.right(), y);
-  }
+  drawHorizontalGrid(painter, plotArea, 5);
 
   QPainterPath path;
   path.moveTo(toScreen(curve.front()));
@@ -169,19 +162,17 @@ void MappingTimeline::paintEvent(QPaintEvent *event) {
     path.lineTo(toScreen(curve[i]));
   }
 
-  painter.setPen(QPen(QColor(102, 193, 255), 2.0));
+  painter.setPen(QPen(palette().primary, 2.0));
   painter.drawPath(path);
 
-  painter.setBrush(QColor(255, 199, 95));
+  painter.setBrush(palette().accent);
   painter.setPen(Qt::NoPen);
   for (const auto &point : curve) {
     const QPointF screenPoint = toScreen(point);
     painter.drawEllipse(screenPoint, 2.5, 2.5);
   }
 
-  painter.setPen(QColor(180, 185, 194));
-  painter.drawText(6, plotArea.top() + 12, tr("Frame position"));
-  painter.drawText(plotArea.right() - 70, height() - 8, tr("Time"));
+  drawAxisLabels(painter, plotArea, tr("Frame position"), tr("Time"));
 
   if (hasCursorFrame) {
     const double clampedCursorXValue = qBound(minX, cursorFrame, maxX);
@@ -200,15 +191,15 @@ void MappingTimeline::paintEvent(QPaintEvent *event) {
     const double yRatio = (clampedCursorYValue - minY) / (maxY - minY);
     const double cursorY = plotArea.bottom() - (yRatio * plotArea.height());
 
-    painter.setPen(QPen(QColor(255, 184, 76), 1.0, Qt::DashLine));
+    painter.setPen(QPen(palette().cursor, 1.0, Qt::DashLine));
     painter.drawLine(plotArea.left(), static_cast<int>(cursorY),
                      plotArea.right(), static_cast<int>(cursorY));
 
-    painter.setPen(QPen(QColor(255, 184, 76), 1.5));
+    painter.setPen(QPen(palette().cursor, 1.5));
     painter.drawLine(static_cast<int>(cursorX), plotArea.top(),
                      static_cast<int>(cursorX), plotArea.bottom());
 
-    painter.setBrush(QColor(255, 184, 76));
+    painter.setBrush(palette().cursor);
     painter.setPen(Qt::NoPen);
     painter.drawEllipse(QPointF(cursorX, cursorY), 4.0, 4.0);
   }

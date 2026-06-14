@@ -1,12 +1,15 @@
 #pragma once
 
 #include "mapping.h"
-#include <QWidget>
+#include "gui/mapping/abstract_timeline_widget.h"
 #include <vector>
+
+class QPainter;
+class QRect;
 
 namespace mechanizm {
 
-class MappingTimeline : public QWidget {
+class MappingTimeline : public AbstractTimelineWidget {
   Q_OBJECT
 public:
   explicit MappingTimeline(QWidget *parent = nullptr);
@@ -16,11 +19,12 @@ public:
   void setBpm(double value);
 
 protected:
-  void paintEvent(QPaintEvent *event) override;
+  void paintTimeline(QPainter &painter, const QRect &plotArea) override;
 
 private:
   void rebuildCurve();
-  static int wrapPointIndex(int point, int size);
+  static int wrapPointIndex(int point, int size,
+                            mechanizm::Mapping::WrapBehaviour wrapBehaviour);
 
   mechanizm::Mapping *mapping = nullptr;
   std::vector<QPointF> curve;

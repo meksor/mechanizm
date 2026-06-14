@@ -33,6 +33,16 @@ public:
   Json::Value JsonValue() const override;
   void SetJsonValue(const Json::Value root) override;
 
+  void setAudioSource(mechanizm::Source *s) {
+    audioSource = s;
+    audioSourceId = (s == nullptr) ? invalidSourceId() : s->id;
+    emit updated();
+  }
+
+  static constexpr mechanizm::id_t invalidSourceId() {
+    return static_cast<mechanizm::id_t>(-1);
+  }
+
   void setName(QString n) {
     name = n.toStdString();
     emit updated();
@@ -48,6 +58,9 @@ public:
 
   mechanizm::id_t sourceId;
   mechanizm::Source *source = nullptr;
+
+  mechanizm::id_t audioSourceId = invalidSourceId();
+  mechanizm::Source *audioSource = nullptr;
 
   std::vector<mechanizm::TimeStep> timeSteps;
 

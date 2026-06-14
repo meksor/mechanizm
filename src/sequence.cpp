@@ -32,6 +32,9 @@ Json::Value Sequence::JsonValue() const {
   root["id"] = id;
   root["name"] = name;
   root["sourceId"] = sourceId;
+  if (audioSourceId != invalidSourceId()) {
+    root["audioSourceId"] = audioSourceId;
+  }
 
   root["timeSteps"] = Json::arrayValue;
   for (int i = 0; i < timeSteps.size(); ++i)
@@ -52,7 +55,7 @@ const mechanizm::id_t Sequence::getNextId(std::vector<Sequence *> items) {
 
 Sequence::Sequence(mechanizm::id_t id, mechanizm::Source *source,
                    cxxmidi::File file, int trackIndex)
-    : id(id), source(source), sourceId(source->id) {
+  : id(id), source(source), sourceId(source->id) {
   // TODO: static -> configurable in modal
 
   cxxmidi::Track track = file[trackIndex];
@@ -74,6 +77,9 @@ void Sequence::SetJsonValue(const Json::Value root) {
   id = root["id"].asLargestUInt();
   name = root["name"].asString();
   sourceId = root["sourceId"].asLargestUInt();
+  audioSourceId = root.isMember("audioSourceId")
+                      ? root["audioSourceId"].asLargestUInt()
+                      : invalidSourceId();
 
   const Json::Value timeSteps = root["timeSteps"];
   for (int i = 0; i < timeSteps.size(); ++i)
@@ -87,11 +93,36 @@ void Sequence::loadTimeStep(Json::Value json) {
 }
 
 void Sequence::onSourcesChanged(std::vector<mechanizm::Source *> sources) {
+  mechanizm::Source *previousSource = source;
+  mechanizm::Source *previousAudioSource = audioSource;
+
   auto id_matches = [this](mechanizm::Source *s) {
     return s->id == this->sourceId;
   };
   auto res = std::find_if(sources.begin(), sources.end(), id_matches);
-  source = *res;
+  source = (res == sources.end()) ? nullptr : *res;
+
+  if (audioSourceId == invalidSourceId()) {
+    audioSource = nullptr;
+  } else {
+    auto audio_id_matches = [this](mechanizm::Source *s) {
+      return s->id == this->audioSourceId;
+    };
+    auto audio_res =
+        std::find_if(sources.begin(), sources.end(), audio_id_matches);
+    audioSource = (audio_res == sources.end()) ? nullptr : *audio_res;
+    if (audioSource == nullptr) {
+      audioSourceId = invalidSourceId();
+    }
+  }
+
+  const bool wasInitialized =
+      previousSource != nullptr || previousAudioSource != nullptr;
+  const bool changed = previousSource != source ||
+                       previousAudioSource != audioSource;
+  if (wasInitialized && changed) {
+    emit updated();
+  }
 };
 
 mechanizm::TimeStep Sequence::getNextTimestep(double pos) {

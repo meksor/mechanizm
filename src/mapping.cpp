@@ -109,8 +109,14 @@ Mapping::channelts_t Mapping::getChannelTimeseries() {
 }
 
 void Mapping::onSequencesChanged(std::vector<mechanizm::Sequence *> sequences) {
+  bool hadResolvedSequence = false;
+  bool changed = false;
+
   int size = this->channels.size();
   for (int i = 0; i < size; i++) {
+    mechanizm::Sequence *previousSequence = this->channels[i].sequence;
+    hadResolvedSequence = hadResolvedSequence || previousSequence != nullptr;
+
     auto id_matches = [this, i](mechanizm::Sequence *s) {
       return s->id == this->channels[i].sequenceId;
     };
@@ -118,22 +124,32 @@ void Mapping::onSequencesChanged(std::vector<mechanizm::Sequence *> sequences) {
     auto res = std::find_if(sequences.begin(), sequences.end(), id_matches);
     if (res != sequences.end()) {
       this->channels[i].sequence = *res;
+      changed = changed || this->channels[i].sequence != previousSequence;
     } else {
       this->channels.erase(this->channels.begin() + i);
       size--;
       i--;
+      changed = true;
     }
   }
-  onChannelsChanged();
+
+  if (hadResolvedSequence && changed) {
+    onChannelsChanged();
+  }
 };
 
 void Mapping::onClipsChanged(std::vector<mechanizm::Clip *> clips) {
+  mechanizm::Clip *previousClip = clip;
+
   auto id_matches = [this](mechanizm::Clip *c) {
     return c->id == this->clipId;
   };
   auto res = std::find_if(clips.begin(), clips.end(), id_matches);
   clip = res == clips.end() ? nullptr : *res;
-  onChannelsChanged();
+
+  if (previousClip != nullptr && previousClip != clip) {
+    onChannelsChanged();
+  }
 };
 
 } // namespace mechanizm

@@ -7,14 +7,14 @@ namespace mechanizm {
 ClipInfo::ClipInfo(QWidget *parent) : QWidget(parent) {
   flay = new QFormLayout();
   nameEdit = new QLineEdit();
-  inFrameEdit = new QSpinBox();
-  inFrameEdit->setReadOnly(true);
-  outFrameEdit = new QSpinBox();
-  outFrameEdit->setReadOnly(true);
+  startFrameEdit = new QSpinBox();
+  startFrameEdit->setReadOnly(true);
+  endFrameEdit = new QSpinBox();
+  endFrameEdit->setReadOnly(true);
 
   flay->addRow(tr("Name:"), nameEdit);
-  flay->addRow(tr("In Frame:"), inFrameEdit);
-  flay->addRow(tr("Out Frame:"), outFrameEdit);
+  flay->addRow(tr("Start Frame:"), startFrameEdit);
+  flay->addRow(tr("End Frame:"), endFrameEdit);
   this->setLayout(flay);
 }
 
@@ -22,15 +22,24 @@ void ClipInfo::onClipSelected(mechanizm::Clip *c) {
   disconnect(nameEdit, &QLineEdit::textChanged, nullptr, nullptr);
   clip = c;
   renderClip(clip);
-  connect(nameEdit, &QLineEdit::textChanged, clip, &mechanizm::Clip::setName);
+  if (clip != nullptr) {
+    connect(nameEdit, &QLineEdit::textChanged, clip, &mechanizm::Clip::setName);
+  }
 };
 
 void ClipInfo::renderClip(mechanizm::Clip *c) {
-  nameEdit->setText(QString::fromStdString(clip->name));
-  inFrameEdit->setMaximum(clip->source->reader->info.video_length);
-  outFrameEdit->setMaximum(clip->source->reader->info.video_length);
-  inFrameEdit->setValue(clip->inFrame);
-  outFrameEdit->setValue(clip->outFrame);
+  if (c == nullptr || c->source == nullptr || c->source->reader == nullptr) {
+    nameEdit->clear();
+    startFrameEdit->setValue(0);
+    endFrameEdit->setValue(0);
+    return;
+  }
+
+  nameEdit->setText(QString::fromStdString(c->name));
+  startFrameEdit->setMaximum(c->source->reader->info.video_length);
+  endFrameEdit->setMaximum(c->source->reader->info.video_length);
+  startFrameEdit->setValue(static_cast<int>(c->getFirstFrame()));
+  endFrameEdit->setValue(static_cast<int>(c->getLastFrame()));
 }
 
 } // namespace mechanizm

@@ -19,14 +19,14 @@ SequencesWindow::SequencesWindow(QWidget *parent, Qt::WindowFlags flags)
   hbox = new QHBoxLayout(widget);
 
   sequenceTable = new mechanizm::SequenceTable();
+  sequenceTable->setFixedWidth(360);
   hbox->addWidget(sequenceTable);
 
   sequenceInfo = new mechanizm::SequenceInfo();
-  sequenceInfo->setFixedWidth(200);
   hbox->addWidget(sequenceInfo);
 
   setCentralWidget(widget);
-  this->setFixedSize(700, 300);
+  this->setFixedSize(980, 360);
 
   connect(sequenceTable, &SequenceTable::selectSequence, sequenceInfo,
           &SequenceInfo::onSequenceSelected);

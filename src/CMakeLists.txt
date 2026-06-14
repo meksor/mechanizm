@@ -13,17 +13,19 @@ add_executable(
     gui/clip/clip_editor_window.cpp
     gui/clip/clip_info.cpp
     gui/clip/clip_table.cpp
-    gui/clip/clips_window.cpp
     gui/clip/rythmic_point_table.cpp
 
     gui/sequence/sequence_info.cpp
     gui/sequence/sequence_table.cpp
+    gui/sequence/sequence_timeline_widget.cpp
+    gui/sequence/sequence_waveform_widget.cpp
     gui/sequence/sequences_window.cpp
 
     gui/mapping/mapping_info.cpp
     gui/mapping/mapping_table.cpp
-    gui/mapping/mappings_window.cpp
     gui/mapping/channel_table.cpp
+    gui/mapping/abstract_timeline_widget.cpp
+    gui/mapping/clip_timeline.cpp
     gui/mapping/mapping_timeline.cpp
     gui/mapping/mapping_editor_window.cpp
 

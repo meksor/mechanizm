@@ -27,12 +27,23 @@ openshot::Clip *Compositor::compose(mechanizm::Mapping *m) {
   }
 
   auto c = m->clip;
-  if (os_clip != nullptr) {
-    delete os_clip;
+  const std::string sourcePath = c->source->path;
+  auto cached = clipCache.find(sourcePath);
+  if (cached == clipCache.end()) {
+    auto inserted = clipCache.emplace(sourcePath, std::make_unique<openshot::Clip>(sourcePath));
+    cached = inserted.first;
   }
-  os_clip = new openshot::Clip(c->source->path);
+
+  os_clip = cached->second.get();
   if (!os_clip->Reader()->IsOpen()) {
     os_clip->Reader()->Open();
+  }
+
+  while (os_clip->time.GetCount() > 0) {
+    os_clip->time.RemovePoint(os_clip->time.GetCount() - 1);
+  }
+  if (os_clip->GetCache() != nullptr) {
+    os_clip->GetCache()->Clear();
   }
 
   openshot::Fraction fps = os_clip->Reader()->info.fps;

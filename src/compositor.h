@@ -4,6 +4,9 @@
 #include "clip.h"
 #include "mapping.h"
 #include <libopenshot/Timeline.h>
+#include <memory>
+#include <string>
+#include <unordered_map>
 
 namespace mechanizm {
 class Compositor {
@@ -15,6 +18,7 @@ public:
 
 private:
   openshot::Clip *os_clip = nullptr;
+  std::unordered_map<std::string, std::unique_ptr<openshot::Clip>> clipCache;
   float bpm;
 };
 

@@ -59,8 +59,6 @@ long Clip::getLastFrame() {
 Clip::Clip(mechanizm::id_t i, mechanizm::Source *s) : id(i), source(s) {
   name = source->name;
   sourceId = source->id;
-  inFrame = 0;
-  outFrame = source->reader->info.video_length;
 };
 
 Json::Value Clip::JsonValue() const {
@@ -68,8 +66,6 @@ Json::Value Clip::JsonValue() const {
   root["id"] = id;
   root["name"] = name;
   root["sourceId"] = sourceId;
-  root["inFrame"] = inFrame;
-  root["outFrame"] = outFrame;
 
   root["rythmicPoints"] = Json::arrayValue;
   for (int i = 0; i < rythmicPoints.size(); ++i)
@@ -82,8 +78,8 @@ void Clip::SetJsonValue(const Json::Value root) {
   id = root["id"].asLargestUInt();
   name = root["name"].asString();
   sourceId = root["sourceId"].asLargestUInt();
-  inFrame = root["inFrame"].asLargestUInt();
-  outFrame = root["outFrame"].asLargestUInt();
+  // Keep reading legacy projects that might still include inFrame/outFrame.
+  // Clip bounds are now inferred from rythmic points, so these fields are ignored.
 
   const Json::Value rythmicPoints = root["rythmicPoints"];
   for (int i = 0; i < rythmicPoints.size(); ++i)

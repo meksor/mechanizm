@@ -7,6 +7,7 @@
 #include <QAction>
 #include <QDebug>
 #include <QFileDialog>
+#include <QMessageBox>
 #include <qnamespace.h>
 
 namespace mechanizm {
@@ -37,7 +38,7 @@ SourcesWindow::SourcesWindow(QWidget *parent, Qt::WindowFlags flags)
 void SourcesWindow::createActions() {
   importAct = new QAction(tr("&Import New Source"), this);
   importAct->setShortcut(QKeySequence(Qt::CTRL | Qt::Key_I));
-  importAct->setStatusTip(tr("Import a source file (video, midi)"));
+  importAct->setStatusTip(tr("Import a source file (video, audio, midi)"));
 
   removeAct = new QAction(tr("&Remove Source"), this);
   removeAct->setShortcuts(QKeySequence::Delete);
@@ -99,6 +100,10 @@ void SourcesWindow::convertSelectedSource() {
           new mechanizm::Sequence(id, source, file, i);
       project->addSequence(sequence);
     }
+  } else {
+    QMessageBox::information(
+        this, tr("Convert Source"),
+        tr("Audio sources are assigned directly to sequences and do not need conversion."));
   }
 }
 

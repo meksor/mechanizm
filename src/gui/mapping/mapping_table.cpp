@@ -33,10 +33,17 @@ void MappingTable::onMappingsChanged(std::vector<mechanizm::Mapping *> m) {
   this->setRowCount(mappings.size());
   for (int i = 0; i < mappings.size(); i++) {
     mechanizm::Mapping *mapping = mappings[i];
+    if (mapping == nullptr) {
+      continue;
+    }
+
     QTableWidgetItem *nameItem =
         new QTableWidgetItem(QString(mapping->name.c_str()));
-    QTableWidgetItem *clipItem =
-        new QTableWidgetItem(QString(mapping->clip->name.c_str()));
+    const QString clipName =
+        (mapping->clip == nullptr)
+            ? tr("Missing")
+            : QString::fromStdString(mapping->clip->name);
+    QTableWidgetItem *clipItem = new QTableWidgetItem(clipName);
 
     std::vector<QTableWidgetItem *> items = {nameItem, clipItem};
     for (int j = 0; j < items.size(); j++) {

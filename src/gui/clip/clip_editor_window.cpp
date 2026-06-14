@@ -2,6 +2,8 @@
 #include "clip.h"
 #include <QHeaderView>
 
+#include "project.h"
+
 namespace mechanizm {
 ClipEditorWindow::ClipEditorWindow(QWidget *parent, Qt::WindowFlags flags)
     : QMainWindow(parent, flags) {
@@ -11,6 +13,14 @@ ClipEditorWindow::ClipEditorWindow(QWidget *parent, Qt::WindowFlags flags)
   QWidget *widget = new QWidget;
   hbox = new QHBoxLayout(widget);
 
+  leftColumn = new QVBoxLayout();
+  clipTable = new mechanizm::ClipTable();
+  clipInfo = new mechanizm::ClipInfo();
+  clipInfo->setFixedWidth(300);
+  leftColumn->addWidget(clipTable);
+  leftColumn->addWidget(clipInfo);
+  hbox->addLayout(leftColumn);
+
   rpTable = new mechanizm::RythmicPointTable();
   rpTable->setFixedWidth(250);
   hbox->addWidget(rpTable);
@@ -19,14 +29,41 @@ ClipEditorWindow::ClipEditorWindow(QWidget *parent, Qt::WindowFlags flags)
   player->setFixedSize(720, 480);
   player->renderWidget->setFixedSize(720, 480);
 
-  hbox->addWidget(player);
+  timeline = new mechanizm::ClipTimeline();
+  timeline->setFixedHeight(130);
+
+  previewColumn = new QVBoxLayout();
+  previewColumn->addWidget(player);
+  previewColumn->addWidget(timeline);
+  hbox->addLayout(previewColumn);
+
+  cursorSyncTimer = new QTimer(this);
+  cursorSyncTimer->setInterval(33);
+  connect(cursorSyncTimer, &QTimer::timeout, this, [this]() {
+    if (timeline == nullptr || player == nullptr || player->player == nullptr) {
+      return;
+    }
+    timeline->setCursorFrame(player->player->Position());
+  });
+  cursorSyncTimer->start();
+
   createMenus();
 
   connect(rpTable, &mechanizm::RythmicPointTable::selectRythmicPoint, player,
           &mechanizm::PlayerWidget::onRythmicPointSelected);
+    connect(clipTable, &mechanizm::ClipTable::selectClip, this,
+      &ClipEditorWindow::onClipSelected);
+    connect(clipTable, &mechanizm::ClipTable::selectClip, clipInfo,
+      &ClipInfo::onClipSelected);
 
   setCentralWidget(widget);
 }
+
+  void ClipEditorWindow::onProjectChanged(mechanizm::Project *p) {
+    project = p;
+    connect(project, &Project::clipsChanged, clipTable,
+      &mechanizm::ClipTable::onClipsChanged);
+  }
 
 void ClipEditorWindow::createActions() {
   removeAct = new QAction(tr("&Remove Rythmic Point"), this);
@@ -57,16 +94,33 @@ void ClipEditorWindow::createMenus() {
   playerMenu->addAction(player->dFrmAct);
 }
 void ClipEditorWindow::onClipSelected(mechanizm::Clip *c) {
+  if (c == nullptr) {
+    clip = nullptr;
+    if (timeline != nullptr) {
+      timeline->onClipSelected(nullptr);
+    }
+    return;
+  }
   clip = c;
+  clipInfo->onClipSelected(clip);
   player->setClip(clip);
   rpTable->onClipUpdated(clip);
+  if (timeline != nullptr) {
+    timeline->onClipSelected(clip);
+  }
 }
 void ClipEditorWindow::removeSelectedRythmicPoint() {
+  if (clip == nullptr || clip->rythmicPoints.empty()) {
+    return;
+  }
   mechanizm::RythmicPoint rp = rpTable->getSelectedRythmicPoint();
   clip->removeRythmicPoint(rp);
   rpTable->onClipUpdated(clip);
 };
 void ClipEditorWindow::addRythmicPoint() {
+  if (clip == nullptr) {
+    return;
+  }
   mechanizm::id_t id = mechanizm::RythmicPoint::getNextId(clip->rythmicPoints);
   mechanizm::RythmicPoint rp(id, player->player->Position());
   clip->addRythmicPoint(rp);

@@ -10,7 +10,7 @@
 namespace mechanizm {
 class Source : public mechanizm::JsonSerializable, mechanizm::HasId {
 public:
-  enum Type : int { VIDEO = 0, MIDI = 1 };
+  enum Type : int { VIDEO = 0, MIDI = 1, AUDIO = 2 };
 
   typedef std::map<Source::Type, std::set<std::string>> ext_map_t;
   typedef std::map<Source::Type, std::string> dpn_map_t;
@@ -33,7 +33,7 @@ public:
   std::string path;      // original file path
   Type type;
 
-  openshot::FFmpegReader *reader;
+  openshot::FFmpegReader *reader = nullptr;
 
 protected:
 private:

@@ -17,10 +17,18 @@ MappingInfo::MappingInfo(QWidget *parent) : QWidget(parent) {
 void MappingInfo::onMappingSelected(mechanizm::Mapping *m) {
   mapping = m;
   disconnect(nameEdit, &QLineEdit::textChanged, nullptr, nullptr);
+  if (mapping == nullptr) {
+    nameEdit->clear();
+    clipEdit->clear();
+    return;
+  }
+
   nameEdit->setText(QString::fromStdString(mapping->name));
   connect(nameEdit, &QLineEdit::textChanged, mapping,
           &mechanizm::Mapping::setName);
-  clipEdit->setText(QString::fromStdString(mapping->clip->name));
+  clipEdit->setText(mapping->clip == nullptr
+                        ? tr("Missing")
+                        : QString::fromStdString(mapping->clip->name));
 
 };
 

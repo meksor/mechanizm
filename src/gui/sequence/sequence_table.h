@@ -22,6 +22,7 @@ signals:
 
 private:
   std::vector<mechanizm::Sequence *> sequences;
+  QString displayAudioName(const mechanizm::Sequence *sequence) const;
 };
 
 } // namespace mechanizm

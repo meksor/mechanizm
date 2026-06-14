@@ -9,12 +9,20 @@ namespace mechanizm {
 
 SequenceTable::SequenceTable(QWidget *parent) : QTableWidget(parent) {
   this->setSelectionBehavior(SelectionBehavior::SelectRows);
-  this->setColumnCount(1);
-  this->setHorizontalHeaderLabels(QStringList({"Name"}));
+  this->setColumnCount(2);
+  this->setHorizontalHeaderLabels(QStringList({"Name", "Audio"}));
   this->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
   this->horizontalHeader()->setStretchLastSection(true);
   connect(this, &SequenceTable::currentCellChanged, this,
           &SequenceTable::onCellChanged);
+}
+
+QString SequenceTable::displayAudioName(
+    const mechanizm::Sequence *sequence) const {
+  if (sequence == nullptr || sequence->audioSource == nullptr) {
+    return tr("None");
+  }
+  return QString::fromStdString(sequence->audioSource->name);
 }
 
 mechanizm::Sequence *SequenceTable::getSelectedSequence() {
@@ -35,8 +43,10 @@ void SequenceTable::onSequencesChanged(std::vector<mechanizm::Sequence *> s) {
     mechanizm::Sequence *sequence = sequences[i];
     QTableWidgetItem *nameItem =
         new QTableWidgetItem(QString(sequence->name.c_str()));
+    QTableWidgetItem *audioItem =
+        new QTableWidgetItem(displayAudioName(sequence));
 
-    std::vector<QTableWidgetItem *> items = {nameItem};
+    std::vector<QTableWidgetItem *> items = {nameItem, audioItem};
     for (int j = 0; j < items.size(); j++) {
       items[j]->setFlags(Qt::ItemIsSelectable | Qt::ItemIsUserCheckable |
                          Qt::ItemIsEnabled);

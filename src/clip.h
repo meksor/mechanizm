@@ -57,9 +57,6 @@ public:
   mechanizm::id_t sourceId;
   mechanizm::Source *source = nullptr;
 
-  int inFrame;
-  int outFrame;
-
   std::vector<mechanizm::RythmicPoint> rythmicPoints;
 signals:
   void updated();

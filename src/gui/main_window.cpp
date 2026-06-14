@@ -1,5 +1,4 @@
 #include "gui/main_window.h"
-#include "gui/mapping/mapping_table.h"
 #include <QFileDialog>
 
 namespace mechanizm {
@@ -24,37 +23,22 @@ MainWindow::MainWindow(QWidget *parent, Qt::WindowFlags flags)
   connect(this, &MainWindow::projectChanged, sourcesWindow,
           &mechanizm::SourcesWindow::onProjectChanged);
 
-  clipsWindow = new mechanizm::ClipsWindow(this);
-  clipsWindow->hide();
-  clipsWindow->addAction(saveAct);
-  connect(this, &MainWindow::projectChanged, clipsWindow,
-          &mechanizm::ClipsWindow::onProjectChanged);
-
   clipEditorWindow = new mechanizm::ClipEditorWindow(this);
   clipEditorWindow->hide();
   clipEditorWindow->addAction(saveAct);
-  connect(clipsWindow->clipTable, &ClipTable::selectClip, clipEditorWindow,
-          &ClipEditorWindow::onClipSelected);
+    connect(this, &MainWindow::projectChanged, clipEditorWindow,
+      &mechanizm::ClipEditorWindow::onProjectChanged);
 
-  sequencesWindow = new mechanizm::SequencesWindow(this);
+    sequencesWindow = new mechanizm::SequencesWindow(this);
   sequencesWindow->hide();
   sequencesWindow->addAction(saveAct);
   connect(this, &MainWindow::projectChanged, sequencesWindow,
           &mechanizm::SequencesWindow::onProjectChanged);
 
-  mappingsWindow = new mechanizm::MappingsWindow(this);
-  mappingsWindow->hide();
-  mappingsWindow->addAction(saveAct);
-  connect(this, &MainWindow::projectChanged, mappingsWindow,
-          &mechanizm::MappingsWindow::onProjectChanged);
-
   mappingEditorWindow = new mechanizm::MappingEditorWindow(this);
   connect(sequencesWindow->sequenceTable,
           &mechanizm::SequenceTable::selectSequence, mappingEditorWindow,
           &mechanizm::MappingEditorWindow::onSequenceSelected);
-  connect(mappingsWindow->mappingTable, &mechanizm::MappingTable::selectMapping,
-          mappingEditorWindow,
-          &mechanizm::MappingEditorWindow::onMappingSelected);
   connect(this, &MainWindow::projectChanged, mappingEditorWindow,
           &mechanizm::MappingEditorWindow::onProjectChanged);
 
@@ -91,10 +75,8 @@ void MainWindow::changeProject(mechanizm::Project *p) {
   project = p;
   projectWidget->show();
   sourcesWindow->show();
-  clipsWindow->show();
   clipEditorWindow->show();
   sequencesWindow->show();
-  mappingsWindow->show();
   mappingEditorWindow->show();
 
   emit projectChanged(project);
